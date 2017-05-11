@@ -1,0 +1,36 @@
+body {
+  width: 100%;
+  length: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+
+.tile {
+  position: absolute;
+  margin: 0px;
+  padding: 0px;
+}
+
+.rd, .rx {
+  background-color: lightgrey;
+}
+
+.wk {
+  background-color: brown;
+}
+
+.hm {
+  background-color: red;
+}
+
+.rl {
+  background-color: grey;
+}
+
+.pk {
+  background-color: green;
+}
+
+.rv {
+  background-color: blue;
+}

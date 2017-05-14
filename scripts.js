@@ -1,7 +1,7 @@
 let streetArray = [
   'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'wk', 'pk', 'rv', 'pk', 'hm', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd',
   'rd', 'wk', 'wk', 'wk', 'hm', 'wk', 'rd', 'wk', 'wk', 'wk', 'wk', 'wk', 'rd', 'hm', 'pk', 'rv', 'pk', 'pk', 'hm', 'hm', 'hm', 'hm', 'hm', 'hm', 'rd', 'hm', 'hm', 'hm',
-  'rd', 'wk', 'wk', 'wk', 'wk', 'wk', 'rd', 'wk', 'hm', 'wk', 'wk', 'wk', 'rd', 'wk', 'pk', 'rv', 'hm', 'hm', 'hm', 'hm', 'hm', 'hm', 'hm', 'hm', 'rd', 'hm', 'pk', 'pk',
+  'rd', 'wk', 'wk', 'wk', 'wk', 'wk', 'rd', 'wk', 'hm', 'wk', 'wk', 'wk', 'rd', 'wk', 'pk', 'rv', 'hm', 'hm', 'hm', 'hm', 'hm', 'hm', 'pk', 'hm', 'rd', 'hm', 'pk', 'pk',
   'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'rd', 'hm', 'hm', 'rd', 'hm', 'pk', 'pk',
   'rd', 'wk', 'hm', 'wk', 'wk', 'wk', 'rd', 'wk', 'wk', 'rd', 'wk', 'wk', 'rd', 'wk', 'pk', 'rv', 'hm', 'wk', 'rd', 'hm', 'hm', 'rd', 'wk', 'hm', 'rd', 'hm', 'pk', 'pk',
   'rd', 'wk', 'wk', 'wk', 'wk', 'wk', 'rd', 'wk', 'wk', 'rd', 'wk', 'wk', 'rd', 'wk', 'pk', 'rv', 'pk', 'hm', 'rd', 'hm', 'hm', 'rd', 'hm', 'hm', 'rd', 'hm', 'hm', 'hm',
@@ -29,11 +29,11 @@ let carLength = 0.5
 let carWidth = 0.5
 
 function setup () {
-  frameRate(15)
+  frameRate(30)
   tileDimension = setTileDimension()
   drawMap()
   getArrays()
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < 20; i++) {
     createCar()
   }
 }
@@ -79,13 +79,18 @@ function getArrays () {
     arrays.map[i].nearbys = nearbys.map(x => x.id)
   })
 }
+var routeCount = 0
 function getRoute (fromId, toId) {
-  return route = searchRoutes(fromId, [toId], [[{id: toId}]])
+  routeCount = 0
+  console.log('finding route from', fromId, 'to', toId)
+  return searchRoutes(fromId, [toId], [[{id: toId}]])
 }
-function searchRoutes(end, list, tree) {
+
+function searchRoutes (end, list, tree) {
+  routeCount++
   const step = tree.length - 1 // the number of steps away from the start
   tree.push([]) // Adds a new array for the roads the next step array
-  for (let i = 0; i < tree[step].length; i++) { //for each road that is the current number of steps away
+  for (let i = 0; i < tree[step].length; i++) { // for each road that is the current number of steps away
     let branch = tree[step][i]
     let nearbys = arrays.map[branch.id].nearbys // the spaces nearby the road
     if (nearbys.indexOf(end) !== -1) { // if one of these spaces is the end
@@ -95,21 +100,27 @@ function searchRoutes(end, list, tree) {
         route.push(nextBranch) // ...and store that in the route
       }
       route = route.map(x => x.id)
+      if (routeCount > 200) {
+        breakhere = true
+      }
       return route // Returns the full route as an array of ids
-   } else { // If none of the nearby spaces were the final destination
-     nearbys = nearbys.filter(x => {
-       return !list.includes(x) && arrays.map[x].type === 'rd' // filter out all the spaces that are not roads
-     })
-     nearbys.forEach(id => { // for each space not filtered out
-       list.push(id)
-       tree[step + 1].push({id: id, prevId: branch.id}) // add it to the array for the next step in the tree
-     })
-   }
+    } else { // If none of the nearby spaces were the final destination
+      nearbys = nearbys.filter(x => {
+        return !list.includes(x) && arrays.map[x].type === 'rd' // filter out all the spaces that are not roads
+      })
+      nearbys.forEach(id => { // for each space not filtered out
+        list.push(id)
+        tree[step + 1].push({id: id, prevId: branch.id}) // add it to the array for the next step in the tree
+      })
+    }
+  }
+  if (routeCount > 1000) {
+    breakhere = true
   }
   return searchRoutes(end, list, tree) // rerun the function until the route has been found
 }
 
-function drawRoute(fromId, toId) {
+function drawRoute (fromId, toId) {
   const arr = getRoute(fromId, toId)
   arr.forEach(id => {
     let div = document.createElement('div')
@@ -123,7 +134,7 @@ function drawRoute(fromId, toId) {
   })
 }
 
-function drawCar(xpos, ypos, id) {
+function drawCar (xpos, ypos, id) {
   let div = document.createElement('div')
   div.style.width = Math.floor(tileDimension * carWidth) + 'px'
   div.style.height = Math.floor(tileDimension * carLength) + 'px'
@@ -144,6 +155,11 @@ function createCar (fromId, toId) {
     toId = arrays.wk[Math.floor(Math.random() * arrays.wk.length)]
   }
   let route = getRoute(fromId, toId)
+  while (route.length < 3) {
+    fromId = arrays.hm[Math.floor(Math.random() * arrays.hm.length)]
+    toId = arrays.wk[Math.floor(Math.random() * arrays.wk.length)]
+    route = getRoute(fromId, toId)
+  }
   let position = getPosition(route[0], route[1])
   let destination = getPosition(route[1], route[2])
   let speed = 0.2
@@ -163,6 +179,12 @@ function getPosition (posOne, posTwo) {
 
 function getDirection (posOne, posTwo) {
   // 0 up, 1 left, 2 down, 3 right
+  if (arrays.map[posOne] === undefined) {
+    breakhere = true
+  }
+  if (arrays.map[posTwo] === undefined) {
+    breakhere = true
+  }
   if (arrays.map[posOne].xpos > arrays.map[posTwo].xpos) {
     return 3
   } else if (arrays.map[posOne].xpos < arrays.map[posTwo].xpos) {
@@ -175,8 +197,8 @@ function getDirection (posOne, posTwo) {
 let counter = 0
 function draw () {
   moveCars()
-  counter ++
-  if (counter === 40) {
+  counter++
+  if (counter === 10) {
     counter = 0
     createCar()
   }
@@ -193,7 +215,7 @@ function moveCars () {
           let newDestination = getPosition(arrays.cars[i].route[0], arrays.cars[i].route[1])
           arrays.cars[i].xpos2 = newDestination.xpos
           arrays.cars[i].ypos2 = newDestination.ypos
-        } else if (arrays.cars[i].route.length > 0){
+        } else if (arrays.cars[i].route.length > 0) {
           let newDestination = arrays.cars[i].xpos2 = getPosition(arrays.cars[i].route[0], arrays.cars[i].route[0])
           arrays.cars[i].xpos2 = newDestination.xpos
           arrays.cars[i].ypos2 = newDestination.ypos
@@ -204,7 +226,7 @@ function moveCars () {
     }
   }
 }
-function moveTowardsDestination(id) {
+function moveTowardsDestination (id) {
   let car = arrays.cars[id]
   let h = Math.sqrt(Math.pow(car.xpos - car.xpos2, 2) + Math.pow(car.ypos - car.ypos2, 2))
   let ratio = car.speed / h

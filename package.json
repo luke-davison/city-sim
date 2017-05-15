@@ -1,0 +1,22 @@
+{
+  "name": "mapper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "scripts.js",
+  "scripts": {
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luke-davison/mapper.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/luke-davison/mapper/issues"
+  },
+  "homepage": "https://github.com/luke-davison/mapper#readme",
+  "devDependencies": {
+    "webpack": "^2.5.1"
+  }
+}

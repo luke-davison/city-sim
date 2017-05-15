@@ -24,7 +24,7 @@ const mapWidth = 28
 const mapHeight = 16
 const screenWidth = window.innerWidth
 const screenHeight = window.innerHeight
-let lanePosition = 0.25
+let lanePosition = 0.05
 let carLength = 0.5
 let carWidth = 0.5
 
@@ -82,7 +82,6 @@ function getArrays () {
 var routeCount = 0
 function getRoute (fromId, toId) {
   routeCount = 0
-  console.log('finding route from', fromId, 'to', toId)
   return searchRoutes(fromId, [toId], [[{id: toId}]])
 }
 
@@ -100,9 +99,6 @@ function searchRoutes (end, list, tree) {
         route.push(nextBranch) // ...and store that in the route
       }
       route = route.map(x => x.id)
-      if (routeCount > 200) {
-        breakhere = true
-      }
       return route // Returns the full route as an array of ids
     } else { // If none of the nearby spaces were the final destination
       nearbys = nearbys.filter(x => {
@@ -113,9 +109,6 @@ function searchRoutes (end, list, tree) {
         tree[step + 1].push({id: id, prevId: branch.id}) // add it to the array for the next step in the tree
       })
     }
-  }
-  if (routeCount > 1000) {
-    breakhere = true
   }
   return searchRoutes(end, list, tree) // rerun the function until the route has been found
 }
@@ -147,24 +140,30 @@ function drawCar (xpos, ypos, id) {
   document.getElementById('main').appendChild(div)
 }
 
-function createCar (fromId, toId) {
-  if (!fromId) {
-    fromId = arrays.hm[Math.floor(Math.random() * arrays.hm.length)]
-  }
+function createCar (fromId) {
+  let speed = 0.2
+  let home = arrays.hm[Math.floor(Math.random() * arrays.hm.length)]
+  let xpos = arrays.map[home].xpos + 0.5 - carWidth
+  let ypos = arrays.map[home].ypos + 0.5 - carLength
+  arrays.cars.push({moving: true, speed: speed, home: home, xpos: xpos, ypos: ypos})
+  drawCar(xpos, ypos, arrays.cars.length - 1)
+  setRoute(arrays.cars.length - 1, home)
+}
+
+function setRoute (id, home, toId) {
+  let fromId = home
   if (!toId) {
     toId = arrays.wk[Math.floor(Math.random() * arrays.wk.length)]
   }
   let route = getRoute(fromId, toId)
   while (route.length < 3) {
-    fromId = arrays.hm[Math.floor(Math.random() * arrays.hm.length)]
     toId = arrays.wk[Math.floor(Math.random() * arrays.wk.length)]
     route = getRoute(fromId, toId)
   }
-  let position = getPosition(route[0], route[1])
   let destination = getPosition(route[1], route[2])
-  let speed = 0.2
-  arrays.cars.push({moving: true, xpos: position.xpos, ypos: position.ypos, xpos2: destination.xpos, ypos2: destination.ypos, speed: speed, route: route})
-  drawCar(position.xpos, position.ypos, arrays.cars.length - 1)
+  arrays.cars[id].xpos2 = destination.xpos
+  arrays.cars[id].ypos2 = destination.ypos
+  arrays.cars[id].route = route
 }
 
 function getPosition (posOne, posTwo) {
@@ -179,12 +178,6 @@ function getPosition (posOne, posTwo) {
 
 function getDirection (posOne, posTwo) {
   // 0 up, 1 left, 2 down, 3 right
-  if (arrays.map[posOne] === undefined) {
-    breakhere = true
-  }
-  if (arrays.map[posTwo] === undefined) {
-    breakhere = true
-  }
   if (arrays.map[posOne].xpos > arrays.map[posTwo].xpos) {
     return 3
   } else if (arrays.map[posOne].xpos < arrays.map[posTwo].xpos) {
@@ -197,11 +190,6 @@ function getDirection (posOne, posTwo) {
 let counter = 0
 function draw () {
   moveCars()
-  counter++
-  if (counter === 10) {
-    counter = 0
-    createCar()
-  }
 }
 function moveCars () {
   for (let i = 0; i < arrays.cars.length; i++) {
@@ -219,8 +207,14 @@ function moveCars () {
           let newDestination = arrays.cars[i].xpos2 = getPosition(arrays.cars[i].route[0], arrays.cars[i].route[0])
           arrays.cars[i].xpos2 = newDestination.xpos
           arrays.cars[i].ypos2 = newDestination.ypos
+          if (arrays.cars[i].route[0] !== arrays.cars[i].home && Math.random() * 4 < 1) {
+            setRoute(i, arrays.cars[i].route[0], arrays.cars[i].home)
+          } else {
+            setRoute(i, arrays.cars[i].route[0])
+          }
         } else {
-          arrays.cars[i].moving = false
+          console.log('something went wrong')
+          setRoute(arrays.cars[i].home, i)
         }
       }
     }

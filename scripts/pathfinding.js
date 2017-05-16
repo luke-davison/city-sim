@@ -4,9 +4,43 @@ module.exports = {
 }
 
 var g = require('./global.js')
+var movement = require('./movement.js')
 
 function getRoute (fromId, toId) {
-  return searchRoutes(fromId, [toId], [[{id: toId}]])
+  let route = searchRoutes(fromId, [toId], [[{id: toId}]])
+  let tileRoute = [{parent: route[0], place: 4}]
+  tileRoute.push({parent: route[0], place: movement.getDirection(route[0], route[1])})
+
+  for (let i = 1; i < route.length - 1; i++) {
+    console.log('hi')
+    tileRoute = getEntranceTile(tileRoute, route[i - 1], route[i])
+    tileRoute = getThirdTile(tileRoute, route[i - 1], route[i], route[i + 1])
+    tileRoute = getExitTile(tileRoute, route[i], route[i + 1])
+  }
+  return tileRoute
+}
+
+function getExitTile (arr, id, toId) {
+  arr.push({parent: id, place: movement.getDirection(id, toId)})
+  return arr
+}
+
+function getEntranceTile (arr, fromId, id) {
+  let answer = movement.getDirection(fromId, id) - 1
+  if (answer < 0) {
+    answer += 4
+  }
+  arr.push({parent: id, place: answer})
+  return arr
+}
+
+function getThirdTile (arr, fromId, id, toId) {
+  const fromDirection = movement.getDirection(fromId, id)
+  const toDirection = movement.getDirection(id, toId)
+  if (toDirection === fromDirection + 1 || (toDirection === 0 && fromDirection === 3)) {
+    arr.push({parent: id, place: fromDirection})
+  }
+  return arr
 }
 
 function searchRoutes (end, list, tree) {

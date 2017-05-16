@@ -55,10 +55,10 @@ function getArrays () {
   forEachInStreetArray((i, ypos, xpos) => {
     g.arrays.map.push({xpos: xpos, ypos: ypos, id: i, type: streetArray[i]})
     g.arrays[streetArray[i]].push(i)
-    g.arrays.tiles.push({xpos: (xpos + 0.25) * g.tileDimension + g.border, ypos: (ypos + 0.25) * g.tileDimension + g.border, place: 0, parent: g.arrays.map.length - 1})
-    g.arrays.tiles.push({xpos: (xpos + 0.75) * g.tileDimension + g.border, ypos: (ypos + 0.25) * g.tileDimension + g.border, place: 1, parent: g.arrays.map.length - 1})
-    g.arrays.tiles.push({xpos: (xpos + 0.75) * g.tileDimension + g.border, ypos: (ypos + 0.75) * g.tileDimension + g.border, place: 2, parent: g.arrays.map.length - 1})
-    g.arrays.tiles.push({xpos: (xpos + 0.25) * g.tileDimension + g.border, ypos: (ypos + 0.75) * g.tileDimension + g.border, place: 3, parent: g.arrays.map.length - 1})
+    g.arrays.tiles.push({id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.25) * g.tileDimension + g.border, ypos: (ypos + 0.25) * g.tileDimension + g.border, place: 0, parent: g.arrays.map.length - 1})
+    g.arrays.tiles.push({id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.75) * g.tileDimension + g.border, ypos: (ypos + 0.25) * g.tileDimension + g.border, place: 1, parent: g.arrays.map.length - 1})
+    g.arrays.tiles.push({id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.75) * g.tileDimension + g.border, ypos: (ypos + 0.75) * g.tileDimension + g.border, place: 2, parent: g.arrays.map.length - 1})
+    g.arrays.tiles.push({id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.25) * g.tileDimension + g.border, ypos: (ypos + 0.75) * g.tileDimension + g.border, place: 3, parent: g.arrays.map.length - 1})
 
     g.arrays.map[g.arrays.map.length - 1].tiles = [g.arrays.tiles.length - 4, g.arrays.tiles.length - 3, g.arrays.tiles.length - 2, g.arrays.tiles.length - 1]
 

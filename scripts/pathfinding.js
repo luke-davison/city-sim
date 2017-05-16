@@ -8,11 +8,16 @@ var movement = require('./movement.js')
 
 function getRoute (fromId, toId) {
   let route = searchRoutes(fromId, [toId], [[{id: toId}]])
-  let tileRoute = [{parent: route[0], place: 4}]
-  tileRoute.push({parent: route[0], place: movement.getDirection(route[0], route[1])})
+  let direc = movement.getDirection(route[0], route[1])
+  let tileRoute = []
+  if (direc == 0) {
+    tileRoute.push({parent: route[0], place: 4, id: 3})
+  } else {
+    tileRoute.push({parent: route[0], place: 4, id: direc - 1})
+  }
+  tileRoute.push({parent: route[0], place: direc, id: getTileId(route[0], direc)})
 
   for (let i = 1; i < route.length - 1; i++) {
-    console.log('hi')
     tileRoute = getEntranceTile(tileRoute, route[i - 1], route[i])
     tileRoute = getThirdTile(tileRoute, route[i - 1], route[i], route[i + 1])
     tileRoute = getExitTile(tileRoute, route[i], route[i + 1])
@@ -21,7 +26,8 @@ function getRoute (fromId, toId) {
 }
 
 function getExitTile (arr, id, toId) {
-  arr.push({parent: id, place: movement.getDirection(id, toId)})
+  let answer = movement.getDirection(id, toId)
+  arr.push({parent: id, place: answer, id: getTileId(id, answer)})
   return arr
 }
 
@@ -30,7 +36,7 @@ function getEntranceTile (arr, fromId, id) {
   if (answer < 0) {
     answer += 4
   }
-  arr.push({parent: id, place: answer})
+  arr.push({parent: id, place: answer, id: getTileId(id, answer)})
   return arr
 }
 
@@ -38,9 +44,14 @@ function getThirdTile (arr, fromId, id, toId) {
   const fromDirection = movement.getDirection(fromId, id)
   const toDirection = movement.getDirection(id, toId)
   if (toDirection === fromDirection + 1 || (toDirection === 0 && fromDirection === 3)) {
-    arr.push({parent: id, place: fromDirection})
+    arr.push({parent: id, place: fromDirection, id: getTileId(id, fromDirection)})
   }
   return arr
+}
+
+function getTileId (parentId, place) {
+  let answer = g.arrays.tiles.find(x => x.parent === parentId && x.place === place)
+  return answer.id
 }
 
 function searchRoutes (end, list, tree) {

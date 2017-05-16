@@ -80,13 +80,12 @@ function createCar (fromId) {
   drawCar(xpos, ypos, g.arrays.cars.length - 1)
   movement.setRoute(g.arrays.cars.length - 1, home)
 }
-
 function drawCar (xpos, ypos, id) {
   let div = document.createElement('div')
   div.style.width = Math.floor(g.tileDimension * g.carWidth) + 'px'
   div.style.height = Math.floor(g.tileDimension * g.carLength) + 'px'
-  div.style.left = (xpos * g.tileDimension + g.border) + 'px'
-  div.style.top = (ypos * g.tileDimension + g.border) + 'px'
+  div.style.left = xpos + 'px'
+  div.style.top = ypos + 'px'
   div.style['background-color'] = 'black'
   div.style.position = 'absolute'
   div.classList.add('car')

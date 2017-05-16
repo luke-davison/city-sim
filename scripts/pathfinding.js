@@ -10,10 +10,10 @@ function getRoute (fromId, toId) {
   let route = searchRoutes(fromId, [toId], [[{id: toId}]])
   let direc = movement.getDirection(route[0], route[1])
   let tileRoute = []
-  if (direc == 0) {
-    tileRoute.push({parent: route[0], place: 4, id: 3})
+  if (direc === 0) {
+    tileRoute.push({parent: route[0], place: 3, id: getTileId(route[0], 3)})
   } else {
-    tileRoute.push({parent: route[0], place: 4, id: direc - 1})
+    tileRoute.push({parent: route[0], place: direc - 1, id: getTileId(route[0], direc - 1)})
   }
   tileRoute.push({parent: route[0], place: direc, id: getTileId(route[0], direc)})
 
@@ -80,7 +80,6 @@ function searchRoutes (end, list, tree) {
   }
   return searchRoutes(end, list, tree) // rerun the function until the route has been found
 }
-
 
 /* function drawRoute (fromId, toId) {
   const arr = getRoute(fromId, toId)

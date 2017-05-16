@@ -53,7 +53,7 @@ function moveCars () {
       div.style.left = (g.arrays.cars[i].xpos - g.carWidth * g.tileDimension / 2) + 'px'
       div.style.top = (g.arrays.cars[i].ypos - g.carWidth * g.tileDimension / 2) + 'px'
       if (moveTowardsDestination(i)) {
-        g.arrays.tiles[g.arrays.cars[i].route[0].id].car = g.arrays.tiles[g.arrays.cars[i].route[0].id].queue[0] || -1
+        updateTileQueue(g.arrays.cars[i].route[0].id)
         g.arrays.cars[i].route.shift()
         if (g.arrays.cars[i].route.length > 1) {
           g.arrays.cars[i].xpos2 = g.arrays.tiles[g.arrays.map[g.arrays.cars[i].route[1].parent].tiles[g.arrays.cars[i].route[1].place]].xpos
@@ -61,7 +61,7 @@ function moveCars () {
         } else if (g.arrays.cars[i].route.length > 0) {
           g.arrays.cars[i].xpos2 = g.arrays.tiles[g.arrays.map[g.arrays.cars[i].route[0].parent].tiles[g.arrays.cars[i].route[0].place]].xpos
           g.arrays.cars[i].ypos2 = g.arrays.tiles[g.arrays.map[g.arrays.cars[i].route[0].parent].tiles[g.arrays.cars[i].route[0].place]].ypos
-          if (g.arrays.cars[i].route[0] !== g.arrays.cars[i].home && Math.random() * 7 < 1) {
+          if (g.arrays.cars[i].route[0].parent !== g.arrays.cars[i].home && Math.random() * 7 < 1) {
             setRoute(i, g.arrays.cars[i].route[0].parent, g.arrays.cars[i].home)
           } else {
             setRoute(i, g.arrays.cars[i].route[0].parent)
@@ -77,6 +77,14 @@ function moveCars () {
         }
       }
     }
+  }
+}
+
+function updateTileQueue (id) {
+  if (g.arrays.tiles[id].queue.length > 0) {
+    g.arrays.tiles[id].car = g.arrays.tiles[id].queue.shift()
+  } else {
+    g.arrays.tiles[id].car = -1
   }
 }
 
@@ -109,6 +117,7 @@ function setRoute (id, home, toId) {
   g.arrays.cars[id].xpos2 = g.arrays.tiles[g.arrays.map[route[1].parent].tiles[route[1].place]].xpos
   g.arrays.cars[id].ypos2 = g.arrays.tiles[g.arrays.map[route[1].parent].tiles[route[1].place]].ypos
   g.arrays.cars[id].route = route
+  console.log('routeId',route[0].id)
   g.arrays.cars[id].tile = route[0].id
   if (route[0].id !== -1) {
     g.arrays.tiles[route[0].id].car = id

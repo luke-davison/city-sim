@@ -6,12 +6,12 @@ const pathfinding = require('./pathfinding.js')
 const movement = require('./movement.js')
 
 const streetArray = require('./map.js')
-
 function setupScripts () {
+
   // sets the frame rate - which also controls how fast everything travels
   window.frameRate(30)
   // determines how big the tiles can be for everything to fit on the screen
-  g.tileDimension = settileDimension()
+  g.tileDimension = setTileDimension()
   // adds all the map divs to the page
   drawMap()
   // builds all the arrays
@@ -22,7 +22,7 @@ function setupScripts () {
   }
 }
 
-function settileDimension () {
+function setTileDimension () {
   const maxTileHeight = Math.floor((window.innerHeight - 2 * g.border) / g.mapHeight)
   const maxTileWidth = Math.floor((window.innerWidth - 2 * g.border) / g.mapWidth)
   return Math.min(maxTileHeight, maxTileWidth)
@@ -53,42 +53,46 @@ function drawMap () {
 
 function getArrays () {
   forEachInStreetArray((i, ypos, xpos) => {
-    g.arrays.map.push({xpos: xpos, ypos: ypos, id: i, type: streetArray[i]})
-    g.arrays[streetArray[i]].push(i)
-    g.arrays.tiles.push({id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.25) * g.tileDimension + g.border, ypos: (ypos + 0.25) * g.tileDimension + g.border, place: 0, parent: g.arrays.map.length - 1})
-    g.arrays.tiles.push({id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.75) * g.tileDimension + g.border, ypos: (ypos + 0.25) * g.tileDimension + g.border, place: 1, parent: g.arrays.map.length - 1})
-    g.arrays.tiles.push({id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.75) * g.tileDimension + g.border, ypos: (ypos + 0.75) * g.tileDimension + g.border, place: 2, parent: g.arrays.map.length - 1})
-    g.arrays.tiles.push({id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.25) * g.tileDimension + g.border, ypos: (ypos + 0.75) * g.tileDimension + g.border, place: 3, parent: g.arrays.map.length - 1})
-
-    g.arrays.map[g.arrays.map.length - 1].tiles = [g.arrays.tiles.length - 4, g.arrays.tiles.length - 3, g.arrays.tiles.length - 2, g.arrays.tiles.length - 1]
-
-    g.arrays.map.forEach((cell, i) => {
-      let nearbys = g.arrays.map.filter(x => {
-        return x.xpos === cell.xpos && (x.ypos === cell.ypos + 1 || x.ypos === cell.ypos - 1) || x.ypos === cell.ypos && (x.xpos === cell.xpos + 1 || x.xpos === cell.xpos - 1)
-      })
-      g.arrays.map[i].nearbys = nearbys.map(x => x.id)
+    let newSquare = {xpos: xpos, ypos: ypos, id: i, type: streetArray[i]}
+    g.arrays.map.push(newSquare)
+    g.arrays[streetArray[i]].push(newSquare)
+    let tile1 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.25) * g.tileDimension + g.border, ypos: (ypos + 0.25) * g.tileDimension + g.border, place: 0, parent: newSquare}
+    g.arrays.tiles.push(tile1)
+    let tile2 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.75) * g.tileDimension + g.border, ypos: (ypos + 0.25) * g.tileDimension + g.border, place: 1, parent: newSquare}
+    g.arrays.tiles.push(tile2)
+    let tile3 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.75) * g.tileDimension + g.border, ypos: (ypos + 0.75) * g.tileDimension + g.border, place: 2, parent: newSquare}
+    g.arrays.tiles.push(tile3)
+    let tile4 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.25) * g.tileDimension + g.border, ypos: (ypos + 0.75) * g.tileDimension + g.border, place: 3, parent: newSquare}
+    g.arrays.tiles.push(tile4)
+    newSquare.tiles = [tile1, tile2, tile3, tile4]
+  })
+  g.arrays.map.forEach((cell, i) => {
+    cell.nearbys = g.arrays.map.filter(x => {
+      return x.xpos === cell.xpos && (x.ypos === cell.ypos + 1 || x.ypos === cell.ypos - 1) || x.ypos === cell.ypos && (x.xpos === cell.xpos + 1 || x.xpos === cell.xpos - 1)
     })
   })
 }
 
-function createCar (fromId) {
-  let speed = 5
-  let home = g.arrays.hm[Math.floor(Math.random() * g.arrays.hm.length)]
-  let xpos = (g.arrays.map[home].xpos + 0.5 - g.carWidth) * g.tileDimension + g.border
-  let ypos = (g.arrays.map[home].ypos + 0.5 - g.carLength) * g.tileDimension + g.border
-  g.arrays.cars.push({moving: true, speed: speed, home: home, xpos: xpos, ypos: ypos})
-  drawCar(xpos, ypos, g.arrays.cars.length - 1)
-  movement.setRoute(g.arrays.cars.length - 1, home)
+function createCar () {
+  let car = {speed: 5}
+  car.home = g.arrays.hm[Math.floor(Math.random() * g.arrays.hm.length)]
+  console.log('home', car.home)
+  car.xpos = (car.home.xpos + 0.5 - g.carWidth) * g.tileDimension + g.border
+  car.ypos = (car.home.ypos + 0.5 - g.carLength) * g.tileDimension + g.border
+  car.id = g.arrays.cars.length
+  g.arrays.cars.push(car)
+  drawCar(car)
+  movement.setRoute(car, car.home)
 }
-function drawCar (xpos, ypos, id) {
+function drawCar (car) {
   let div = document.createElement('div')
   div.style.width = Math.floor(g.tileDimension * g.carWidth) + 'px'
   div.style.height = Math.floor(g.tileDimension * g.carLength) + 'px'
-  div.style.left = xpos + 'px'
-  div.style.top = ypos + 'px'
+  div.style.left = car.xpos + 'px'
+  div.style.top = car.ypos + 'px'
   div.style['background-color'] = 'black'
   div.style.position = 'absolute'
   div.classList.add('car')
-  div.classList.add('car' + id)
+  div.classList.add('car' + car.id)
   document.getElementById('main').appendChild(div)
 }

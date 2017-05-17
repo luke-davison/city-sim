@@ -5,6 +5,7 @@ const pathfinding = require('./pathfinding.js')
 const movement = require('./movement.js')
 
 function setup () {
+  console.log('hi')
   runStartingScripts()
 }
 

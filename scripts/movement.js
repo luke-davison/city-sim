@@ -49,7 +49,7 @@ function getDirection (posOne, posTwo) {
 function moveCars () {
   g.arrays.cars.forEach((car, i) => {
     // only move the car if it is its turn on the desired tile
-    if (car.route[0].car.id === car.id) {
+    if (car.moving) {
       // move the car div to its current position
       let div = document.getElementsByClassName('car' + car.id)[0]
       div.style.left = (car.xpos - g.carWidth * g.tileDimension / 2) + 'px'
@@ -57,24 +57,31 @@ function moveCars () {
       // move the car towards the next position on its route
       // if it has got to its next position
       if (moveTowardsDestination(car)) {
-        updateTileQueue(car.route[0])
-        car.route.shift()
-        if (car.route.length > 1) {
-          car.xpos2 = car.route[1].xpos
-          car.ypos2 = car.route[1].ypos
+        if (car.route[0].car === -1 || car.route[0].car.id === car.id) {
+          car.tiles.unshift(car.route.shift())
+          car.xpos2 = car.tiles[0].xpos
+          car.ypos2 = car.tiles[0].ypos
+          car.moving = true
+          car.tiles[0].car = car
+          if (car.tiles.length > 2) {
+            updateTileQueue(car.tiles[2])
+            car.tiles.pop()
+          }
         } else {
-          car.xpos2 = car.route[0].xpos
-          car.ypos2 = car.route[0].ypos
-          if (car.route[0].parent !== car.home && Math.random() * 7 < 1) {
-            setRoute(i, car.route[0].parent, car.home)
-          } else {
-            setRoute(i, car.route[0].parent)
+          car.moving = false
+          car.route[0].queue.push(car)
+          if (car.tiles.length > 1) {
+            updateTileQueue(car.tiles[1])
+            car.tiles.pop()
           }
         }
-        if (car.route[0].car === -1) {
-          car.route[0].car = car
-        } else {
-          car.route[0].queue.push(car)
+
+        if (car.route.length === 0) {
+          if (car.tiles[0].parent !== car.home && Math.random() * 7 < 1) {
+            setRoute(car, car.tiles[0].parent, car.home)
+          } else {
+            setRoute(car, car.tiles[0].parent)
+          }
         }
       }
     }
@@ -84,6 +91,9 @@ function moveCars () {
 function updateTileQueue (tile) {
   if (tile.queue.length > 0) {
     tile.car = tile.queue.shift()
+    tile.car.xpos2 = tile.car.tiles[0].xpos
+    tile.car.ypos2 = tile.car.tiles[0].ypos
+    tile.car.moving = true
   } else {
     tile.car = -1
   }
@@ -103,7 +113,6 @@ function moveTowardsDestination (car) {
 }
 
 function setRoute (car, home, to) {
-
   let from = home
   if (!to) {
     to = g.arrays.wk[Math.floor(Math.random() * g.arrays.wk.length)]
@@ -111,12 +120,7 @@ function setRoute (car, home, to) {
   //    to = g.arrays.wk[Math.floor(Math.random() * g.arrays.wk.length)]
   //  }
   }
-  console.log('to', to)
   car.route = pathfinding.getRoute(from, to)
-  car.xpos2 = car.route[1].xpos
-  car.ypos2 = car.route[1].ypos
-  car.tile = car.route[0]
-  //this needs to be changed to something to check if the route[0] is already taken
-  //this also needs to be changed so that route[0] is always the current tile for the car
-  car.route[0].car = car
+  // this needs to be changed to something to check if the route[0] is already taken
+  // this also needs to be changed so that route[0] is always the current tile for the car
 }

@@ -7,7 +7,6 @@ const movement = require('./movement.js')
 
 const streetArray = require('./map.js')
 function setupScripts () {
-
   // sets the frame rate - which also controls how fast everything travels
   window.frameRate(30)
   // determines how big the tiles can be for everything to fit on the screen
@@ -17,7 +16,7 @@ function setupScripts () {
   // builds all the arrays
   getArrays()
   // adds some cars
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 50; i++) {
     createCar()
   }
 }
@@ -74,15 +73,21 @@ function getArrays () {
 }
 
 function createCar () {
-  let car = {speed: 5}
+  let car = {speed: 5, moving: true}
   car.home = g.arrays.hm[Math.floor(Math.random() * g.arrays.hm.length)]
-  console.log('home', car.home)
-  car.xpos = (car.home.xpos + 0.5 - g.carWidth) * g.tileDimension + g.border
-  car.ypos = (car.home.ypos + 0.5 - g.carLength) * g.tileDimension + g.border
   car.id = g.arrays.cars.length
+  car.tiles = []
   g.arrays.cars.push(car)
   drawCar(car)
   movement.setRoute(car, car.home)
+  car.tiles.unshift(car.route.shift())
+  car.tiles.unshift(car.route.shift())
+  car.tiles[0].car = car
+  car.tiles[1].car = car
+  car.xpos = car.tiles[1].xpos
+  car.ypos = car.tiles[1].ypos
+  car.xpos2 = car.tiles[0].xpos
+  car.ypos2 = car.tiles[0].ypos
 }
 function drawCar (car) {
   let div = document.createElement('div')

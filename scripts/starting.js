@@ -16,7 +16,7 @@ function setupScripts () {
   // builds all the arrays
   getArrays()
   // adds some cars
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 40; i++) {
     createCar()
   }
 }
@@ -73,7 +73,7 @@ function getArrays () {
 }
 
 function createCar () {
-  let car = {speed: 5, moving: true}
+  let car = {speed: 0, moving: true, maxSpeed: 0.07, acceleration: 0.002}
   car.home = g.arrays.hm[Math.floor(Math.random() * g.arrays.hm.length)]
   car.id = g.arrays.cars.length
   car.tiles = []

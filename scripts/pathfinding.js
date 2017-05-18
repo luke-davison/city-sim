@@ -19,8 +19,9 @@ function getRoute (from, to) {
   tileRoute.push(route[0].tiles[direc])
   for (let i = 1; i < route.length - 1; i++) {
     tileRoute = getEntranceTile(tileRoute, route[i - 1], route[i])
+    let entranceTile = tileRoute[tileRoute.length - 1]
     tileRoute = getThirdTile(tileRoute, route[i - 1], route[i], route[i + 1])
-    tileRoute = getExitTile(tileRoute, route[i], route[i + 1])
+    tileRoute = getExitTile(tileRoute, route[i], route[i + 1], entranceTile)
   }
   tileRoute = getEntranceTile(tileRoute, route[route.length - 2], route[route.length - 1])
   let j = tileRoute[tileRoute.length - 1].place
@@ -35,9 +36,11 @@ function getRoute (from, to) {
   return tileRoute
 }
 
-function getExitTile (arr, from, to) {
+function getExitTile (arr, from, to, entranceTile) {
   let answer = movement.getDirection(from, to)
-  arr.push(from.tiles[answer])
+  if (from.tiles[answer].id !== entranceTile.id) {
+    arr.push(from.tiles[answer])
+  }
   return arr
 }
 

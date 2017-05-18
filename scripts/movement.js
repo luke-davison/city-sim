@@ -47,13 +47,12 @@ function getDirection (posOne, posTwo) {
 }
 
 function moveCars () {
+  // console.log(g.arrays.cars)
   g.arrays.cars.forEach((car, i) => {
     // only move the car if it is its turn on the desired tile
     if (car.moving) {
       // move the car div to its current position
-      let div = document.getElementsByClassName('car' + car.id)[0]
-      div.style.left = (car.xpos - g.carWidth * g.tileDimension / 2) + 'px'
-      div.style.top = (car.ypos - g.carWidth * g.tileDimension / 2) + 'px'
+
       // move the car towards the next position on its route
       // if it has got to its next position
       if (moveTowardsDestination(car)) {
@@ -69,6 +68,7 @@ function moveCars () {
           }
         } else {
           car.moving = false
+          car.speed = 0
           car.route[0].queue.push(car)
           if (car.tiles.length > 1) {
             updateTileQueue(car.tiles[1])
@@ -91,6 +91,7 @@ function moveCars () {
 function updateTileQueue (tile) {
   if (tile.queue.length > 0) {
     tile.car = tile.queue.shift()
+    tile.car.tiles.unshift(tile.car.route.shift())
     tile.car.xpos2 = tile.car.tiles[0].xpos
     tile.car.ypos2 = tile.car.tiles[0].ypos
     tile.car.moving = true
@@ -101,14 +102,23 @@ function updateTileQueue (tile) {
 
 function moveTowardsDestination (car) {
   let h = Math.sqrt(Math.pow(car.xpos - car.xpos2, 2) + Math.pow(car.ypos - car.ypos2, 2))
-  let ratio = car.speed / (h || 0.01)
-  if (ratio > 0.5) {
+  if (car.speed < car.maxSpeed) {
+    car.speed += car.acceleration
+  }
+  let ratio = (car.speed * g.tileDimension) / (h || 0.01)
+  if (ratio > 0.7) {
     car.xpos = car.xpos2
     car.ypos = car.ypos2
+    let div = document.getElementsByClassName('car' + car.id)[0]
+    div.style.left = (car.xpos - g.carWidth * g.tileDimension / 2) + 'px'
+    div.style.top = (car.ypos - g.carWidth * g.tileDimension / 2) + 'px'
     return true
   }
   car.xpos += (car.xpos2 - car.xpos) * ratio
   car.ypos += (car.ypos2 - car.ypos) * ratio
+  let div = document.getElementsByClassName('car' + car.id)[0]
+  div.style.left = (car.xpos - g.carWidth * g.tileDimension / 2) + 'px'
+  div.style.top = (car.ypos - g.carWidth * g.tileDimension / 2) + 'px'
   return false
 }
 
@@ -121,6 +131,7 @@ function setRoute (car, home, to) {
   //  }
   }
   car.route = pathfinding.getRoute(from, to)
+  // console.log(car.route)
   // this needs to be changed to something to check if the route[0] is already taken
   // this also needs to be changed so that route[0] is always the current tile for the car
 }

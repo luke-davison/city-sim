@@ -75,12 +75,13 @@ function moveCars () {
             car.tiles.pop()
           }
         }
-
-        if (car.route.length === 0) {
-          if (car.tiles[0].parent !== car.home && Math.random() * 7 < 1) {
-            setRoute(car, car.tiles[0].parent, car.home)
+        if (car.route.length === 1) {
+          if (car.route[0].parent.id === car.home.id) {
+            car.moving = false
+            car.speed = 0
+            car.tiles.forEach(updateTileQueue)
           } else {
-            setRoute(car, car.tiles[0].parent)
+            setRouteHome(car, car.route[0].parent, car.route[0])
           }
         }
       }
@@ -105,7 +106,7 @@ function moveTowardsDestination (car) {
   if (car.speed < car.maxSpeed) {
     car.speed += car.acceleration
   }
-  let ratio = (car.speed * g.tileDimension) / (h || 0.01)
+  let ratio = (car.speed * g.tileDimension) / (h || 0.001)
   if (ratio > 0.7) {
     car.xpos = car.xpos2
     car.ypos = car.ypos2
@@ -122,16 +123,23 @@ function moveTowardsDestination (car) {
   return false
 }
 
-function setRoute (car, home, to) {
-  let from = home
-  if (!to) {
-    to = g.arrays.wk[Math.floor(Math.random() * g.arrays.wk.length)]
-  //  while (to.nearbys.find(x => x.id === home.id)) {
-  //    to = g.arrays.wk[Math.floor(Math.random() * g.arrays.wk.length)]
-  //  }
+function setRoute (car, from, fromTile) {
+  let to = car.home
+  if (fromTile.parent === car.home || Math.random() * 5 < 4) {
+    to = getRandomBusiness(from)
   }
-  car.route = pathfinding.getRoute(from, to)
-  // console.log(car.route)
-  // this needs to be changed to something to check if the route[0] is already taken
-  // this also needs to be changed so that route[0] is always the current tile for the car
+  car.route = pathfinding.getRoute(from, to, fromTile)
+}
+
+function setRouteHome (car, from, fromTile) {
+  let to = car.home
+  car.route = pathfinding.getRoute(from, to, fromTile)
+}
+
+function getRandomBusiness (home) {
+  let to = g.arrays.wk[Math.floor(Math.random() * g.arrays.wk.length)]
+  while (to.nearbys.find(x => x.id === home.id || to.id === home.id)) {
+    to = g.arrays.wk[Math.floor(Math.random() * g.arrays.wk.length)]
+  }
+  return to
 }

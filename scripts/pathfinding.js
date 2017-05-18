@@ -6,17 +6,11 @@ module.exports = {
 var g = require('./global.js')
 var movement = require('./movement.js')
 
-function getRoute (from, to) {
+function getRoute (from, to, fromTile) {
   let route = searchRoutes(from, [to.id], [[{branch: to}]])
   let direc = movement.getDirection(route[0], route[1])
 
-  let tileRoute = []
-  if (direc === 0) {
-    tileRoute.push(route[0].tiles[3])
-  } else {
-    tileRoute.push(route[0].tiles[direc - 1])
-  }
-  tileRoute.push(route[0].tiles[direc])
+  let tileRoute = [fromTile]
   for (let i = 1; i < route.length - 1; i++) {
     tileRoute = getEntranceTile(tileRoute, route[i - 1], route[i])
     let entranceTile = tileRoute[tileRoute.length - 1]

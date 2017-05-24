@@ -51,6 +51,7 @@ function moveCars () {
   g.arrays.cars.forEach((car, i) => {
     // only move the car if it is its turn on the desired tile
     if (car.moving) {
+      car.waiting = 0
       // move the car div to its current position
 
       // move the car towards the next position on its route
@@ -81,9 +82,18 @@ function moveCars () {
             car.speed = 0
             car.tiles.forEach(updateTileQueue)
           } else {
-            setRouteHome(car, car.route[0].parent, car.route[0])
+            setRoute(car, car.route[0].parent, car.route[0])
           }
         }
+      }
+    }
+    else {
+      car.waiting++
+      if (car.waiting === 150) {
+        console.log('happening')
+        car.waiting = 0
+        setRoute(car, car.tiles[0].parent, car.tiles[0])
+        car.moving = true
       }
     }
   })
@@ -91,11 +101,17 @@ function moveCars () {
 
 function updateTileQueue (tile) {
   if (tile.queue.length > 0) {
-    tile.car = tile.queue.shift()
-    tile.car.tiles.unshift(tile.car.route.shift())
-    tile.car.xpos2 = tile.car.tiles[0].xpos
-    tile.car.ypos2 = tile.car.tiles[0].ypos
-    tile.car.moving = true
+    let car = tile.queue.find(x => x.tiles[0].parent.id === tile.parent.id)
+    if (!car) {
+      car = tile.queue.shift()
+    } else {
+      tile.queue = tile.queue.filter(x => x.id !== car.id)
+    }
+    tile.car = car
+    car.tiles.unshift(tile.car.route.shift())
+    car.xpos2 = car.tiles[0].xpos
+    car.ypos2 = car.tiles[0].ypos
+    car.moving = true
   } else {
     tile.car = -1
   }
@@ -125,7 +141,7 @@ function moveTowardsDestination (car) {
 
 function setRoute (car, from, fromTile) {
   let to = car.home
-  if (fromTile.parent === car.home || Math.random() * 5 < 4) {
+  if (fromTile.parent === car.home || Math.random() * 5 < 6) {
     to = getRandomBusiness(from)
   }
   car.route = pathfinding.getRoute(from, to, fromTile)

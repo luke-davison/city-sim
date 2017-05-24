@@ -16,7 +16,7 @@ function setupScripts () {
   // builds all the arrays
   getArrays()
   // adds some cars
-  g.arrays.hm.forEach(createCar)
+  g.arrays.hm.forEach((car, i) => i % 2 === 0 && createCar(car))
 }
 
 function setTileDimension () {
@@ -71,7 +71,7 @@ function getArrays () {
 }
 
 function createCar (home) {
-  let car = {speed: 0, moving: true, maxSpeed: 0.1, acceleration: 0.003}
+  let car = {speed: 0, moving: true, maxSpeed: 0.1, acceleration: 0.003, waiting: 0}
   car.home = home // g.arrays.hm[Math.floor(Math.random() * g.arrays.hm.length)]
   car.id = g.arrays.cars.length
   car.tiles = []

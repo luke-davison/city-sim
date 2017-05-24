@@ -2,10 +2,9 @@ module.exports = setupScripts
 
 var g = require('./global.js')
 
-const pathfinding = require('./pathfinding.js')
 const movement = require('./movement.js')
-
 const streetArray = require('./map.js')
+
 function setupScripts () {
   // sets the frame rate - which also controls how fast everything travels
   window.frameRate(30)
@@ -38,8 +37,8 @@ function drawMap () {
     let div = document.createElement('div')
     div.style.width = g.tileDimension + 'px'
     div.style.height = g.tileDimension + 'px'
-    div.style.left = (xpos * g.tileDimension + g.border) + 'px'
-    div.style.top = (ypos * g.tileDimension + g.border) + 'px'
+    div.style.left = xPositionSetup(xpos, ypos) + 'px'
+    div.style.top = yPositionSetup(xpos, ypos) + 'px'
     div.style.position = 'absolute'
     div.classList.add(streetArray[i])
     div.classList.add('id' + i)
@@ -53,13 +52,13 @@ function getArrays () {
     let newSquare = {xpos: xpos, ypos: ypos, id: i, type: streetArray[i]}
     g.arrays.map.push(newSquare)
     g.arrays[streetArray[i]].push(newSquare)
-    let tile1 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.25) * g.tileDimension + g.border, ypos: (ypos + 0.25) * g.tileDimension + g.border, place: 0, parent: newSquare}
+    let tile1 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: xPositionSetup(xpos + 0.25, ypos + 0.25), ypos: yPositionSetup(xpos + 0.25, ypos + 0.25), place: 0, parent: newSquare}
     g.arrays.tiles.push(tile1)
-    let tile2 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.75) * g.tileDimension + g.border, ypos: (ypos + 0.25) * g.tileDimension + g.border, place: 1, parent: newSquare}
+    let tile2 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: xPositionSetup(xpos + 0.75, ypos + 0.25), ypos: yPositionSetup(xpos + 0.75, ypos + 0.25), place: 1, parent: newSquare}
     g.arrays.tiles.push(tile2)
-    let tile3 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.75) * g.tileDimension + g.border, ypos: (ypos + 0.75) * g.tileDimension + g.border, place: 2, parent: newSquare}
+    let tile3 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: xPositionSetup(xpos + 0.75, ypos + 0.75), ypos: yPositionSetup(xpos + 0.75, ypos + 0.75), place: 2, parent: newSquare}
     g.arrays.tiles.push(tile3)
-    let tile4 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.25) * g.tileDimension + g.border, ypos: (ypos + 0.75) * g.tileDimension + g.border, place: 3, parent: newSquare}
+    let tile4 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: xPositionSetup(xpos + 0.25, ypos + 0.75), ypos: yPositionSetup(xpos + 0.25, ypos + 0.75), place: 3, parent: newSquare}
     g.arrays.tiles.push(tile4)
     newSquare.tiles = [tile1, tile2, tile3, tile4]
   })
@@ -76,7 +75,6 @@ function createCar (home) {
   car.id = g.arrays.cars.length
   car.tiles = []
   g.arrays.cars.push(car)
-  drawCar(car)
   movement.setRoute(car, car.home, car.home.tiles[0])
   car.tiles.unshift(car.route.shift())
   car.tiles.unshift(car.route.shift())
@@ -86,6 +84,7 @@ function createCar (home) {
   car.ypos = car.tiles[1].ypos
   car.xpos2 = car.tiles[0].xpos
   car.ypos2 = car.tiles[0].ypos
+  drawCar(car)
 }
 function drawCar (car) {
   let div = document.createElement('div')
@@ -98,4 +97,12 @@ function drawCar (car) {
   div.classList.add('car')
   div.classList.add('car' + car.id)
   document.getElementById('main').appendChild(div)
+}
+
+function xPositionSetup (xpos, ypos) {
+  return (xpos * g.tileDimension + g.border)
+}
+
+function yPositionSetup (xpos, ypos) {
+  return (ypos * g.tileDimension + g.border)
 }

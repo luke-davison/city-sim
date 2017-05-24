@@ -8,56 +8,26 @@ var movement = require('./movement.js')
 
 function getRoute (from, to, fromTile) {
   let route = searchRoutes(from, [to.id], [[{branch: to}]])
-  let direc = movement.getDirection(route[0], route[1])
 
-  let tileRoute = [fromTile]
-  for (let i = 1; i < route.length - 1; i++) {
-    tileRoute = getEntranceTile(tileRoute, route[i - 1], route[i])
-    let entranceTile = tileRoute[tileRoute.length - 1]
-    tileRoute = getThirdTile(tileRoute, route[i - 1], route[i], route[i + 1])
-    tileRoute = getExitTile(tileRoute, route[i], route[i + 1], entranceTile)
-  }
-  tileRoute = getEntranceTile(tileRoute, route[route.length - 2], route[route.length - 1])
-  let j = tileRoute[tileRoute.length - 1].place
-  for (let i = 0; i < 3; i++) {
-    if (j === 3) {
-      j = 0
-    } else {
-      j++
-    }
-    tileRoute.push(tileRoute[tileRoute.length - 1].parent.tiles[j])
-  }
+  let tileRoute = getTileRoute(route, fromTile)
+
+  let routeDirections = getRouteDirections(route, fromTile)
   return tileRoute
 }
 
-function getExitTile (arr, from, to, entranceTile) {
-  let answer = movement.getDirection(from, to)
-  if (from.tiles[answer].id !== entranceTile.id) {
-    arr.push(from.tiles[answer])
+function getDirection (posOne, posTwo) {
+  // 0 up, 1 left, 2 down, 3 right
+  if (posOne.xpos > posTwo.xpos) {
+    return 3
+  } else if (posOne.xpos < posTwo.xpos) {
+    return 1
+  } else if (posOne.ypos < posTwo.ypos) {
+    return 2
   }
-  return arr
+  return 0
 }
 
-function getEntranceTile (arr, from, to) {
-  let answer = movement.getDirection(from, to) - 1
-  if (answer < 0) {
-    answer += 4
-  }
-  arr.push(to.tiles[answer])
-  return arr
-}
-
-function getThirdTile (arr, from, current, to) {
-  const fromDirection = movement.getDirection(from, current)
-  const toDirection = movement.getDirection(current, to)
-  if (toDirection === fromDirection + 1 || (toDirection === 0 && fromDirection === 3)) {
-    arr.push(current.tiles[fromDirection])
-  }
-  return arr
-}
-var counter = 0
 function searchRoutes (endBranch, list, tree) {
-  counter ++
   const step = tree.length - 1 // the number of steps away from the start
   tree.push([]) // Adds a new array for the roads the next step array
   for (let i = 0; i < tree[step].length; i++) { // for each road that is the current number of steps away
@@ -80,23 +50,74 @@ function searchRoutes (endBranch, list, tree) {
       })
     }
   }
-  //if (counter < 500) {
-    return searchRoutes(endBranch, list, tree) // rerun the function until the route has been found
-  //} else {
-  //  return
-  //}
+  return searchRoutes(endBranch, list, tree) // rerun the function until the route has been found
 }
 
-/* function drawRoute (fromId, toId) {
-  const arr = getRoute(fromId, toId)
-  arr.forEach(id => {
-    let div = document.createElement('div')
-    div.style.width = (g.tileDimension / 2) + 'px'
-    div.style.height = (g.tileDimension / 2) + 'px'
-    div.style.left = (g.arrays.map[id].xpos * g.tileDimension + g.border + g.tileDimension / 4) + 'px'
-    div.style.top = (g.arrays.map[id].ypos * g.tileDimension + g.border + g.tileDimension / 4) + 'px'
-    div.style['background-color'] = 'black'
-    div.style.position = 'absolute'
-    document.getElementById('main').appendChild(div)
+function getTileRoute (route, fromTile) {
+  let tileRoute = [fromTile]
+  for (let i = 1; i < route.length - 1; i++) {
+    tileRoute = getEntranceTile(tileRoute, route[i - 1], route[i])
+    let entranceTile = tileRoute[tileRoute.length - 1]
+    tileRoute = getThirdTile(tileRoute, route[i - 1], route[i], route[i + 1])
+    tileRoute = getExitTile(tileRoute, route[i], route[i + 1], entranceTile)
+  }
+  tileRoute = getEntranceTile(tileRoute, route[route.length - 2], route[route.length - 1])
+  let j = tileRoute[tileRoute.length - 1].place
+  for (let i = 0; i < 3; i++) {
+    if (j === 3) {
+      j = 0
+    } else {
+      j++
+    }
+    tileRoute.push(tileRoute[tileRoute.length - 1].parent.tiles[j])
+  }
+  return tileRoute
+}
+
+function getExitTile (arr, from, to, entranceTile) {
+  let answer = getDirection(from, to)
+  if (from.tiles[answer].id !== entranceTile.id) {
+    arr.push(from.tiles[answer])
+  }
+  return arr
+}
+
+function getEntranceTile (arr, from, to) {
+  let answer = getDirection(from, to) - 1
+  if (answer < 0) {
+    answer += 4
+  }
+  arr.push(to.tiles[answer])
+  return arr
+}
+
+function getThirdTile (arr, from, current, to) {
+  const fromDirection = getDirection(from, current)
+  const toDirection = getDirection(current, to)
+  if (toDirection === fromDirection + 1 || (toDirection === 0 && fromDirection === 3)) {
+    arr.push(current.tiles[fromDirection])
+  }
+  return arr
+}
+
+function getRouteDirections (route, fromTile) {
+  let directions = [0]
+  let prevTile = fromTile
+  let prevDirection = 0
+  let newDirection = 0
+  route.forEach((tile, i) => {
+    newDirection = getDirection(prevTile, tile)
+    if (i === 0) {
+      prevDirection = newDirection
+    }
+    let directionChange = newDirection - prevDirection
+    if (directionChange === -3) {
+      directionChange = 1
+    }
+    if (directionChange === 3) {
+      directionChange = -1
+    }
+    directions.push(directionChange)
   })
-} */
+  return directions
+}

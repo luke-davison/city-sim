@@ -8,34 +8,9 @@ module.exports = {
   getDirection
 }
 
-function getPosition (posOne, posTwo) {
-  const direction = getDirection(posOne, posTwo)
-  switch (direction) {
-    case 0:
-      return {
-        xpos: g.arrays.map[posOne].xpos + g.lanePosition,
-        ypos: g.arrays.map[posOne].ypos
-      }
-    case 1:
-      return {
-        xpos: g.arrays.map[posOne].xpos + 1 - g.carLength,
-        ypos: g.arrays.map[posOne].ypos + g.lanePosition
-      }
-    case 2:
-      return {
-        xpos: g.arrays.map[posOne].xpos + 1 - g.lanePosition - g.carWidth,
-        ypos: g.arrays.map[posOne].ypos + 1 - g.carLength
-      }
-    case 3:
-      return {
-        xpos: g.arrays.map[posOne].xpos,
-        ypos: g.arrays.map[posOne].ypos + 1 - g.lanePosition - g.carWidth
-      }
-  }
-}
-
 function getDirection (posOne, posTwo) {
   // 0 up, 1 left, 2 down, 3 right
+  console.log('this happened')
   if (posOne.xpos > posTwo.xpos) {
     return 3
   } else if (posOne.xpos < posTwo.xpos) {
@@ -47,7 +22,6 @@ function getDirection (posOne, posTwo) {
 }
 
 function moveCars () {
-  // console.log(g.arrays.cars)
   g.arrays.cars.forEach((car, i) => {
     // only move the car if it is its turn on the desired tile
     if (car.moving) {
@@ -111,15 +85,15 @@ function moveTowardsDestination (car) {
     car.xpos = car.xpos2
     car.ypos = car.ypos2
     let div = document.getElementsByClassName('car' + car.id)[0]
-    div.style.left = (car.xpos - g.carWidth * g.tileDimension / 2) + 'px'
-    div.style.top = (car.ypos - g.carWidth * g.tileDimension / 2) + 'px'
+    div.style.left = xPosition(car.xpos, car.ypos)
+    div.style.top = yPosition(car.xpos, car.ypos)
     return true
   }
   car.xpos += (car.xpos2 - car.xpos) * ratio
   car.ypos += (car.ypos2 - car.ypos) * ratio
   let div = document.getElementsByClassName('car' + car.id)[0]
-  div.style.left = (car.xpos - g.carWidth * g.tileDimension / 2) + 'px'
-  div.style.top = (car.ypos - g.carWidth * g.tileDimension / 2) + 'px'
+  div.style.left = xPosition(car.xpos, car.ypos)
+  div.style.top = yPosition(car.xpos, car.ypos)
   return false
 }
 
@@ -142,4 +116,12 @@ function getRandomBusiness (home) {
     to = g.arrays.wk[Math.floor(Math.random() * g.arrays.wk.length)]
   }
   return to
+}
+
+function xPosition (xpos, ypos) {
+  return (xpos - g.carWidth * g.tileDimension / 2) + 'px'
+}
+
+function yPosition (xpos, ypos) {
+  return (ypos - g.carWidth * g.tileDimension / 2) + 'px'
 }

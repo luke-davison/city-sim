@@ -1,17 +1,16 @@
 module.exports = {
   getRoute,
-  searchRoutes
+  searchRoutes,
+  getRouteDirections
 }
 
 var g = require('./global.js')
-var movement = require('./movement.js')
 
 function getRoute (from, to, fromTile) {
   let route = searchRoutes(from, [to.id], [[{branch: to}]])
 
   let tileRoute = getTileRoute(route, fromTile)
 
-  let routeDirections = getRouteDirections(route, fromTile)
   return tileRoute
 }
 

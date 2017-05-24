@@ -6,6 +6,7 @@ const movement = require('./movement.js')
 const streetArray = require('./map.js')
 
 function setupScripts () {
+  console.log(g)
   // sets the frame rate - which also controls how fast everything travels
   window.frameRate(30)
   // determines how big the tiles can be for everything to fit on the screen
@@ -15,7 +16,7 @@ function setupScripts () {
   // builds all the arrays
   getArrays()
   // adds some cars
-  g.arrays.hm.forEach(createCar)
+  g.arrays.hm.forEach((hm, i) => i < 40 && createCar(hm))
 }
 
 function setTileDimension () {

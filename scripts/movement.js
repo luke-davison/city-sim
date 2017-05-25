@@ -45,29 +45,29 @@ function getDirection (posOne, posTwo) {
   }
   return 0
 }
-
+var anotherCounter = 0
 function moveCars () {
+  anotherCounter++
+  if (anotherCounter === 20) {
+    anotherCounter = 0
+    let thisTile = g.arrays.tiles.find(x => x.id === 779)
+    //console.log('tile car', thisTile.car)
+    //console.log('tile queue', thisTile.queue.length)
+  }
   // console.log(g.arrays.cars)
   g.arrays.cars.forEach((car, i) => {
     // only move the car if it is its turn on the desired tile
+    let distanceToNext = getDistanceToNext(car)
     if (car.moving) {
       car.waiting = 0
-      // move the car div to its current position
-
-      // move the car towards the next position on its route
-      // if it has got to its next position
-      if (moveTowardsDestination(car)) {
-        if (car.route[0].car === -1 || car.route[0].car.id === car.id) {
-          car.tiles.unshift(car.route.shift())
-          car.xpos2 = car.tiles[0].xpos
-          car.ypos2 = car.tiles[0].ypos
-          car.moving = true
-          car.tiles[0].car = car
-          if (car.tiles.length > 2) {
-            updateTileQueue(car.tiles[2])
-            car.tiles.pop()
-          }
-        } else {
+      moveTowardsDestination(car, distanceToNext)
+    }
+    if (distanceToNext > 0.7) {
+      //console.log('this car', car, car.route)
+      if (car.route[0].car === -1 || car.route[0].car.id === car.id) {
+        whenNextTileIsClear(car)
+      } else {
+        if (car.moving) {
           car.moving = false
           car.speed = 0
           car.route[0].queue.push(car)
@@ -76,27 +76,40 @@ function moveCars () {
             car.tiles.pop()
           }
         }
-        if (car.route.length === 1) {
-          if (car.route[0].parent.id === car.home.id) {
-            car.moving = false
-            car.speed = 0
-            car.tiles.forEach(updateTileQueue)
-          } else {
-            setRoute(car, car.route[0].parent, car.route[0])
-          }
+      }
+    }
+    if (car.route.length < 1) {
+      setRoute(car, car.tiles[0].parent, car.tiles[0])
+    }
+    if (car.speed === 0) {
+      car.waiting++
+      if (car.waiting === 150) {
+        car.waiting = 0
+        car.route[0].queue = car.route[0].queue.filter(x => x.id !== car.id)
+        setRoute(car, car.tiles[0].parent, car.tiles[0])
+        if (car.route[0].car === -1 || car.route[0].car.id === car.id) {
+          whenNextTileIsClear(car)
+        } else {
+          car.route[0].queue.push(car)
         }
       }
     }
-    else {
-      car.waiting++
-      if (car.waiting === 150) {
-        console.log('happening')
-        car.waiting = 0
-        setRoute(car, car.tiles[0].parent, car.tiles[0])
-        car.moving = true
-      }
-    }
   })
+}
+
+function whenNextTileIsClear (car) {
+  car.tiles.unshift(car.route.shift())
+  if (car.tiles.length > 2 && getDirection(car.tiles[1], car.tiles[0]) !== getDirection(car.tiles[2], car.tiles[1])) {
+    car.speed /= 2
+  }
+  car.xpos2 = car.tiles[0].xpos
+  car.ypos2 = car.tiles[0].ypos
+  car.moving = true
+  car.tiles[0].car = car
+  if (car.tiles.length > 2) {
+    updateTileQueue(car.tiles[2])
+    car.tiles.pop()
+  }
 }
 
 function updateTileQueue (tile) {
@@ -107,36 +120,36 @@ function updateTileQueue (tile) {
     } else {
       tile.queue = tile.queue.filter(x => x.id !== car.id)
     }
-    tile.car = car
-    car.tiles.unshift(tile.car.route.shift())
-    car.xpos2 = car.tiles[0].xpos
-    car.ypos2 = car.tiles[0].ypos
-    car.moving = true
+    whenNextTileIsClear(car)
   } else {
     tile.car = -1
   }
 }
 
-function moveTowardsDestination (car) {
+function getDistanceToNext (car) {
   let h = Math.sqrt(Math.pow(car.xpos - car.xpos2, 2) + Math.pow(car.ypos - car.ypos2, 2))
+  if (car.id === 36) {
+  }
+  return ((car.speed || car.acceleration) * g.tileDimension) / (h || 0.001)
+}
+
+function moveTowardsDestination (car, ratio) {
   if (car.speed < car.maxSpeed) {
     car.speed += car.acceleration
   }
-  let ratio = (car.speed * g.tileDimension) / (h || 0.001)
   if (ratio > 0.7) {
     car.xpos = car.xpos2
     car.ypos = car.ypos2
     let div = document.getElementsByClassName('car' + car.id)[0]
     div.style.left = (car.xpos - g.carWidth * g.tileDimension / 2) + 'px'
     div.style.top = (car.ypos - g.carWidth * g.tileDimension / 2) + 'px'
-    return true
+    return
   }
   car.xpos += (car.xpos2 - car.xpos) * ratio
   car.ypos += (car.ypos2 - car.ypos) * ratio
   let div = document.getElementsByClassName('car' + car.id)[0]
   div.style.left = (car.xpos - g.carWidth * g.tileDimension / 2) + 'px'
   div.style.top = (car.ypos - g.carWidth * g.tileDimension / 2) + 'px'
-  return false
 }
 
 function setRoute (car, from, fromTile) {
@@ -152,10 +165,21 @@ function setRouteHome (car, from, fromTile) {
   car.route = pathfinding.getRoute(from, to, fromTile)
 }
 
+counter = 0
 function getRandomBusiness (home) {
-  let to = g.arrays.wk[Math.floor(Math.random() * g.arrays.wk.length)]
-  while (to.nearbys.find(x => x.id === home.id || to.id === home.id)) {
-    to = g.arrays.wk[Math.floor(Math.random() * g.arrays.wk.length)]
+  counter++
+  if (counter > g.arrays.wk.length - 1) {
+    counter = 0
+  }
+  let to = g.arrays.wk[counter]
+  // let to = g.arrays.wk[Math.floor(Math.random() * g.arrays.wk.length)]
+  while (to.nearbys.find(x => x.id === home.id) || to.id === home.id) {
+    counter++
+    if (counter > g.arrays.wk.length - 1) {
+      counter = 0
+    }
+    to = g.arrays.wk[counter]
+    //to = g.arrays.wk[Math.floor(Math.random() * g.arrays.wk.length)]
   }
   return to
 }

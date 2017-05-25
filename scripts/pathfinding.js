@@ -10,14 +10,48 @@ function getRoute (from, to, fromTile) {
   let route = searchRoutes(from, [to.id], [[{branch: to}]])
   let direc = movement.getDirection(route[0], route[1])
 
-  let tileRoute = [fromTile]
-  for (let i = 1; i < route.length - 1; i++) {
-    tileRoute = getEntranceTile(tileRoute, route[i - 1], route[i])
-    let entranceTile = tileRoute[tileRoute.length - 1]
-    tileRoute = getThirdTile(tileRoute, route[i - 1], route[i], route[i + 1])
-    tileRoute = getExitTile(tileRoute, route[i], route[i + 1], entranceTile)
+  let tileRoute = []
+  let exitTile = getExitTile(route[0], route[1], fromTile)
+  if (typeof exitTile === 'object') {
+    let tiles = route[0].tiles.map(x => x.place)
+    tiles = tiles.sort((a, b) => {
+      let a1 = a - exitTile.place
+      let b1 = b - exitTile.place
+      if (a1 < 0) {
+        a1 += 4
+      }
+      if (b1 < 0) {
+        b1 += 4
+      }
+      return a1 - b1
+    })
+    for (let i = 1; i < tiles.length; i++) {
+      if (route[0].tiles.find(x => x.place === tiles[i]).id !== fromTile.id) {
+        tiles.splice(i, 1)
+        i--
+      } else {
+        tiles.splice(i, 1)
+        i = tiles.length
+      }
+    }
+    tiles.length === 0 && console.log('happens')
+    tiles.push(tiles.shift())
+    tiles.length === 0 && console.log(tiles)
+    for (let i = 0; i < tiles.length; i++) {
+      tileRoute.push(route[0].tiles.find(x => x.place === tiles[i]))
+    }
   }
-  tileRoute = getEntranceTile(tileRoute, route[route.length - 2], route[route.length - 1])
+  for (let i = 1; i < route.length - 1; i++) {
+    let entranceTile = getEntranceTile(route[i - 1], route[i])
+    typeof entranceTile === 'object' && tileRoute.push(entranceTile)
+    let thirdTile = getThirdTile(route[i - 1], route[i], route[i + 1])
+    typeof thirdTile === 'object' && tileRoute.push(thirdTile)
+
+    let exitTile = getExitTile(route[i], route[i + 1], entranceTile)
+    typeof exitTile === 'object' && tileRoute.push(exitTile)
+  }
+  let entranceTile = getEntranceTile(route[route.length - 2], route[route.length - 1])
+  typeof entranceTile === 'object' && tileRoute.push(entranceTile)
   let j = tileRoute[tileRoute.length - 1].place
   for (let i = 0; i < 3; i++) {
     if (j === 3) {
@@ -30,30 +64,27 @@ function getRoute (from, to, fromTile) {
   return tileRoute
 }
 
-function getExitTile (arr, from, to, entranceTile) {
+function getExitTile (from, to, entranceTile) {
   let answer = movement.getDirection(from, to)
   if (from.tiles[answer].id !== entranceTile.id) {
-    arr.push(from.tiles[answer])
+    return from.tiles[answer]
   }
-  return arr
 }
 
-function getEntranceTile (arr, from, to) {
+function getEntranceTile (from, to) {
   let answer = movement.getDirection(from, to) - 1
   if (answer < 0) {
     answer += 4
   }
-  arr.push(to.tiles[answer])
-  return arr
+  return to.tiles[answer]
 }
 
-function getThirdTile (arr, from, current, to) {
+function getThirdTile (from, current, to) {
   const fromDirection = movement.getDirection(from, current)
   const toDirection = movement.getDirection(current, to)
   if (toDirection === fromDirection + 1 || (toDirection === 0 && fromDirection === 3)) {
-    arr.push(current.tiles[fromDirection])
+    return current.tiles[fromDirection]
   }
-  return arr
 }
 var counter = 0
 function searchRoutes (endBranch, list, tree) {

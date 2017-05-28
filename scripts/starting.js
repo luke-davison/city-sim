@@ -4,6 +4,7 @@ var g = require('./global.js')
 
 const pathfinding = require('./pathfinding.js')
 const movement = require('./movement.js')
+const buildMap = require('./buildmap.js')
 
 const streetArray = require('./map.js')
 function setupScripts () {
@@ -12,7 +13,7 @@ function setupScripts () {
   // determines how big the tiles can be for everything to fit on the screen
   g.tileDimension = setTileDimension()
   // adds all the map divs to the page
-  drawMap()
+  buildMap()
   // builds all the arrays
   getArrays()
   // adds some cars
@@ -21,9 +22,10 @@ function setupScripts () {
 }
 
 function setTileDimension () {
-  const maxTileHeight = Math.floor((window.innerHeight - 2 * g.border) / g.mapHeight)
-  const maxTileWidth = Math.floor((window.innerWidth - 2 * g.border) / g.mapWidth)
-  return Math.min(maxTileHeight, maxTileWidth)
+  // const maxTileHeight = Math.floor((window.innerHeight - 2 * g.border) / g.mapHeight)
+  // const maxTileWidth = Math.floor((window.innerWidth - 2 * g.border) / g.mapWidth)
+  // return Math.min(maxTileHeight, maxTileWidth)
+  return Math.floor(Math.sqrt(33 * 33 + 66 * 66))
 }
 
 function forEachInStreetArray (func) {
@@ -34,26 +36,14 @@ function forEachInStreetArray (func) {
   }
 }
 
-function drawMap () {
-  forEachInStreetArray((i, ypos, xpos) => {
-    let div = document.createElement('div')
-    div.style.width = g.tileDimension + 'px'
-    div.style.height = g.tileDimension + 'px'
-    div.style.left = (xpos * g.tileDimension + g.border) + 'px'
-    div.style.top = (ypos * g.tileDimension + g.border) + 'px'
-    div.style.position = 'absolute'
-    div.classList.add(streetArray[i])
-    div.classList.add('id' + i)
-    div.classList.add('tile')
-    document.getElementById('main').appendChild(div)
-  })
-}
-
 function getArrays () {
   forEachInStreetArray((i, ypos, xpos) => {
-    let newSquare = {xpos: xpos, ypos: ypos, id: i, type: streetArray[i]}
+    let newSquare = {xpos: xpos, ypos: ypos, id: i, type: streetArray[i][0]}
+    console.log('here')
     g.arrays.map.push(newSquare)
-    g.arrays[streetArray[i]].push(newSquare)
+    console.log('no')
+    g.arrays[streetArray[i][0]].push(newSquare)
+    console.log('nor here')
     let tile1 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.25) * g.tileDimension + g.border, ypos: (ypos + 0.25) * g.tileDimension + g.border, place: 0, parent: newSquare}
     g.arrays.tiles.push(tile1)
     let tile2 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.75) * g.tileDimension + g.border, ypos: (ypos + 0.25) * g.tileDimension + g.border, place: 1, parent: newSquare}
@@ -89,14 +79,14 @@ function createCar (home) {
   car.ypos2 = car.tiles[0].ypos
 }
 function drawCar (car) {
-  let div = document.createElement('div')
-  div.style.width = Math.floor(g.tileDimension * g.carWidth) + 'px'
-  div.style.height = Math.floor(g.tileDimension * g.carLength) + 'px'
-  div.style.left = car.xpos + 'px'
-  div.style.top = car.ypos + 'px'
-  div.style['background-color'] = 'black'
-  div.style.position = 'absolute'
-  div.classList.add('car')
-  div.classList.add('car' + car.id)
-  document.getElementById('main').appendChild(div)
+  let img = document.createElement('img')
+  img.src = './sprites/vehicles/carBlue3_010.png'
+  img.style.position = 'absolute'
+  img.classList.add('car')
+  img.classList.add('car' + car.id)
+  document.getElementById('main').appendChild(img)
+  img.onload = function () {
+    img.style.left = movement.carXposToIsometric(car.xpos, car.ypos) + 'px'
+    img.style.top = movement.carYposToIsometric(car.xpos, car.ypos) + 'px'
+  }
 }

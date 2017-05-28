@@ -5,7 +5,9 @@ var pathfinding = require('./pathfinding')
 module.exports = {
   moveCars,
   setRoute,
-  getDirection
+  getDirection,
+  carXposToIsometric,
+  carYposToIsometric
 }
 
 function getPosition (posOne, posTwo) {
@@ -45,16 +47,7 @@ function getDirection (posOne, posTwo) {
   }
   return 0
 }
-var anotherCounter = 0
 function moveCars () {
-  anotherCounter++
-  if (anotherCounter === 20) {
-    anotherCounter = 0
-    let thisTile = g.arrays.tiles.find(x => x.id === 779)
-    //console.log('tile car', thisTile.car)
-    //console.log('tile queue', thisTile.queue.length)
-  }
-  // console.log(g.arrays.cars)
   g.arrays.cars.forEach((car, i) => {
     // only move the car if it is its turn on the desired tile
     let distanceToNext = getDistanceToNext(car)
@@ -63,7 +56,6 @@ function moveCars () {
       moveTowardsDestination(car, distanceToNext)
     }
     if (distanceToNext > 0.7) {
-      //console.log('this car', car, car.route)
       if (car.route[0].car === -1 || car.route[0].car.id === car.id) {
         whenNextTileIsClear(car)
       } else {
@@ -127,9 +119,8 @@ function updateTileQueue (tile) {
 }
 
 function getDistanceToNext (car) {
-  let h = Math.sqrt(Math.pow(car.xpos - car.xpos2, 2) + Math.pow(car.ypos - car.ypos2, 2))
-  if (car.id === 36) {
-  }
+  let h = Math.sqrt(Math.pow(carXposToIsometric(car.xpos, car.ypos) - carXposToIsometric(car.xpos2, car.ypos2), 2) + Math.pow(carYposToIsometric(car.xpos, car.ypos) - carYposToIsometric(car.xpos2, car.ypos2), 2))
+  // return ((car.speed || car.acceleration) * g.tileDimension) / (h || 0.001)
   return ((car.speed || car.acceleration) * g.tileDimension) / (h || 0.001)
 }
 
@@ -148,8 +139,8 @@ function moveTowardsDestination (car, ratio) {
   car.xpos += (car.xpos2 - car.xpos) * ratio
   car.ypos += (car.ypos2 - car.ypos) * ratio
   let div = document.getElementsByClassName('car' + car.id)[0]
-  div.style.left = (car.xpos - g.carWidth * g.tileDimension / 2) + 'px'
-  div.style.top = (car.ypos - g.carWidth * g.tileDimension / 2) + 'px'
+  div.style.left = carXposToIsometric(car.xpos, car.ypos) + 'px'
+  div.style.top = carYposToIsometric(car.xpos, car.ypos) + 'px'
 }
 
 function setRoute (car, from, fromTile) {
@@ -165,21 +156,18 @@ function setRouteHome (car, from, fromTile) {
   car.route = pathfinding.getRoute(from, to, fromTile)
 }
 
-counter = 0
 function getRandomBusiness (home) {
-  counter++
-  if (counter > g.arrays.wk.length - 1) {
-    counter = 0
-  }
-  let to = g.arrays.wk[counter]
-  // let to = g.arrays.wk[Math.floor(Math.random() * g.arrays.wk.length)]
+  let to = g.arrays.wk[Math.floor(Math.random() * g.arrays.wk.length)]
   while (to.nearbys.find(x => x.id === home.id) || to.id === home.id) {
-    counter++
-    if (counter > g.arrays.wk.length - 1) {
-      counter = 0
-    }
-    to = g.arrays.wk[counter]
-    //to = g.arrays.wk[Math.floor(Math.random() * g.arrays.wk.length)]
+    to = g.arrays.wk[Math.floor(Math.random() * g.arrays.wk.length)]
   }
   return to
+}
+
+function carXposToIsometric (xpos, ypos) {
+  return 66 * (18 + xpos - ypos)
+}
+
+function carYposToIsometric (xpos, ypos) {
+  return (xpos + ypos + 2) * 33
 }

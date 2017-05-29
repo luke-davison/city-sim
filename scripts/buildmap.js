@@ -14,24 +14,27 @@ function buildMap () {
         document.getElementById('main').appendChild(img)
         img.onload = function () { moveImage(img, j, i, 0) }
       }
-      let k = 2
-      while (data[i * 28 + j][k]) {
+      let h = 2
+      while (data[i * 28 + j][h]) {
+        console.log('hiiii')
         let img = document.createElement('img')
-        img.src = './sprites/' + data[i * 28 + j][k]
+        img.src = './sprites/' + data[i * 28 + j][h]
         img.style.position = 'absolute'
         img.classList.add('id' + i)
         img.classList.add('tile')
         document.getElementById('main').appendChild(img)
-        img.onload = function () { moveImage(img, j, i, k - 1) }
-        k++
+        img.onload = () => { moveImage(img, j, i, h - 1) }
+        h++
       }
     }
   }
 }
 
 function moveImage (img, xpos, ypos, zpos) {
+  console.log(arguments)
   img.style.left = xToIso(xpos, ypos, img.width, zpos) + 'px'
   img.style.top = yToIso(xpos, ypos, img.height, zpos) + 'px'
+  img.style.zIndex = (ypos + xpos) * 100 - 5
 }
 
 function xToIso (xpos, ypos, imgWidth, zpos) {
@@ -43,9 +46,18 @@ function xToIso (xpos, ypos, imgWidth, zpos) {
 }
 
 function yToIso (xpos, ypos, imgHeight, zpos) {
-  let offset = 0
-  if (zpos > 0) {
-    offset = -72
+  let zoffset = 0
+  if (zpos === 2) {
+    console.log('hi')
+    zoffset = -72
   }
-  return (xpos + ypos + 2) * 33 - imgHeight + offset
+  if (zpos === 1) {
+    console.log('hi2')
+    zoffset = -100
+  }
+  if (zpos === 3) {
+    console.log('hi3')
+    zoffset = -120
+  }
+  return (xpos + ypos + 4) * 33 - imgHeight + zoffset
 }

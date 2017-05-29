@@ -73,8 +73,12 @@ function whenNextTileIsClear (car) {
   car.moving = true
   car.tiles[0].car = car
   if (car.tiles.length > 2) {
+    if ((car.tiles[2].parent.type !== 'rd') && (car.tiles[1].parent.type === 'rd')) {
+      car.speed = 0
+    }
     updateTileQueue(car.tiles[2])
     car.tiles.pop()
+
   }
 }
 
@@ -107,6 +111,7 @@ function moveTowardsDestination (car, ratio) {
     let div = document.getElementsByClassName('car' + car.id)[0]
     div.style.left = carXposToIsometric(car.xpos, car.ypos) + 'px'
     div.style.top = carYposToIsometric(car.xpos, car.ypos) + 'px'
+    div.style.zIndex = Math.floor(car.xpos) * 100 + Math.floor(car.ypos) * 100 + 5
     return
   }
   car.xpos += (car.xpos2 - car.xpos) * ratio
@@ -114,6 +119,15 @@ function moveTowardsDestination (car, ratio) {
   let div = document.getElementsByClassName('car' + car.id)[0]
   div.style.left = carXposToIsometric(car.xpos, car.ypos) + 'px'
   div.style.top = carYposToIsometric(car.xpos, car.ypos) + 'px'
+  div.style.zIndex = Math.floor(car.xpos) * 100 + Math.floor(car.ypos) * 100 + 5
+
+  if (ratio > car.maxSpeed / 0.25) {
+    if (car.tiles[0].parent.type !== 'rd') {
+      div.style.visibility = 'hidden'
+    } else {
+      div.style.visibility = 'visible'
+    }
+  }
 }
 
 function setRoute (car, from, fromTile) {
@@ -138,9 +152,9 @@ function getRandomBusiness (home) {
 }
 
 function carXposToIsometric (xpos, ypos) {
-  return 66 * (18 + xpos - ypos)
+  return 66 * (18 + xpos - ypos) + 50
 }
 
 function carYposToIsometric (xpos, ypos) {
-  return (xpos + ypos + 2) * 33 - 80
+  return (xpos + ypos) * 33 + 22
 }

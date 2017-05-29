@@ -20,6 +20,7 @@ function setupScripts () {
   g.arrays.hm.forEach((car, i) => i % 2 === 0 && createCar(car))
 
   drawExampleCar()
+  console.log(g.arrays)
 }
 
 function setTileDimension () {
@@ -41,11 +42,8 @@ function forEachInStreetArray (func) {
 function getArrays () {
   forEachInStreetArray((i, ypos, xpos) => {
     let newSquare = {xpos: xpos, ypos: ypos, id: i, type: streetArray[i][0]}
-    console.log('here')
     g.arrays.map.push(newSquare)
-    console.log('no')
     g.arrays[streetArray[i][0]].push(newSquare)
-    console.log('nor here')
     let tile1 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.25), ypos: (ypos + 0.25), place: 0, parent: newSquare}
     g.arrays.tiles.push(tile1)
     let tile2 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.75), ypos: (ypos + 0.25), place: 1, parent: newSquare}
@@ -90,6 +88,7 @@ function drawCar (car) {
   img.onload = function () {
     img.style.left = movement.carXposToIsometric(car.xpos, car.ypos) + 'px'
     img.style.top = movement.carYposToIsometric(car.xpos, car.ypos) + 'px'
+    img.style.zIndex = car.ypos + car.ypos + 5
   }
 }
 
@@ -99,7 +98,7 @@ function drawExampleCar () {
   img.style.position = 'absolute'
   document.getElementById('main').appendChild(img)
   img.onload = function () {
-    img.style.left = movement.carXposToIsometric(0, 17) + 'px'
-    img.style.top = movement.carYposToIsometric(0, 17) + 'px'
+    img.style.left = movement.carXposToIsometric(0, 0) + 'px'
+    img.style.top = movement.carYposToIsometric(0, 0) + 'px'
   }
 }

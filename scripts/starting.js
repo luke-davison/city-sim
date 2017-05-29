@@ -18,14 +18,16 @@ function setupScripts () {
   getArrays()
   // adds some cars
   g.arrays.hm.forEach((car, i) => i % 2 === 0 && createCar(car))
-  console.log(g.arrays)
+
+  drawExampleCar()
 }
 
 function setTileDimension () {
   // const maxTileHeight = Math.floor((window.innerHeight - 2 * g.border) / g.mapHeight)
   // const maxTileWidth = Math.floor((window.innerWidth - 2 * g.border) / g.mapWidth)
   // return Math.min(maxTileHeight, maxTileWidth)
-  return Math.floor(Math.sqrt(33 * 33 + 66 * 66))
+  return 20
+  // return Math.floor(Math.sqrt(33 * 33 + 66 * 66))
 }
 
 function forEachInStreetArray (func) {
@@ -44,13 +46,13 @@ function getArrays () {
     console.log('no')
     g.arrays[streetArray[i][0]].push(newSquare)
     console.log('nor here')
-    let tile1 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.25) * g.tileDimension + g.border, ypos: (ypos + 0.25) * g.tileDimension + g.border, place: 0, parent: newSquare}
+    let tile1 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.25), ypos: (ypos + 0.25), place: 0, parent: newSquare}
     g.arrays.tiles.push(tile1)
-    let tile2 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.75) * g.tileDimension + g.border, ypos: (ypos + 0.25) * g.tileDimension + g.border, place: 1, parent: newSquare}
+    let tile2 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.75), ypos: (ypos + 0.25), place: 1, parent: newSquare}
     g.arrays.tiles.push(tile2)
-    let tile3 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.75) * g.tileDimension + g.border, ypos: (ypos + 0.75) * g.tileDimension + g.border, place: 2, parent: newSquare}
+    let tile3 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.75), ypos: (ypos + 0.75), place: 2, parent: newSquare}
     g.arrays.tiles.push(tile3)
-    let tile4 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.25) * g.tileDimension + g.border, ypos: (ypos + 0.75) * g.tileDimension + g.border, place: 3, parent: newSquare}
+    let tile4 = {id: g.arrays.tiles.length, car: -1, queue: [], xpos: (xpos + 0.25), ypos: (ypos + 0.75), place: 3, parent: newSquare}
     g.arrays.tiles.push(tile4)
     newSquare.tiles = [tile1, tile2, tile3, tile4]
   })
@@ -88,5 +90,16 @@ function drawCar (car) {
   img.onload = function () {
     img.style.left = movement.carXposToIsometric(car.xpos, car.ypos) + 'px'
     img.style.top = movement.carYposToIsometric(car.xpos, car.ypos) + 'px'
+  }
+}
+
+function drawExampleCar () {
+  let img = document.createElement('img')
+  img.src = './sprites/vehicles/carBlue3_010.png'
+  img.style.position = 'absolute'
+  document.getElementById('main').appendChild(img)
+  img.onload = function () {
+    img.style.left = movement.carXposToIsometric(0, 17) + 'px'
+    img.style.top = movement.carYposToIsometric(0, 17) + 'px'
   }
 }

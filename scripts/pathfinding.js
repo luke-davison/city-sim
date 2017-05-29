@@ -86,9 +86,8 @@ function getThirdTile (from, current, to) {
     return current.tiles[fromDirection]
   }
 }
-var counter = 0
+
 function searchRoutes (endBranch, list, tree) {
-  counter ++
   const step = tree.length - 1 // the number of steps away from the start
   tree.push([]) // Adds a new array for the roads the next step array
   for (let i = 0; i < tree[step].length; i++) { // for each road that is the current number of steps away
@@ -111,23 +110,5 @@ function searchRoutes (endBranch, list, tree) {
       })
     }
   }
-  //if (counter < 500) {
-    return searchRoutes(endBranch, list, tree) // rerun the function until the route has been found
-  //} else {
-  //  return
-  //}
+  return searchRoutes(endBranch, list, tree) // rerun the function until the route has been found
 }
-
-/* function drawRoute (fromId, toId) {
-  const arr = getRoute(fromId, toId)
-  arr.forEach(id => {
-    let div = document.createElement('div')
-    div.style.width = (g.tileDimension / 2) + 'px'
-    div.style.height = (g.tileDimension / 2) + 'px'
-    div.style.left = (g.arrays.map[id].xpos * g.tileDimension + g.border + g.tileDimension / 4) + 'px'
-    div.style.top = (g.arrays.map[id].ypos * g.tileDimension + g.border + g.tileDimension / 4) + 'px'
-    div.style['background-color'] = 'black'
-    div.style.position = 'absolute'
-    document.getElementById('main').appendChild(div)
-  })
-} */

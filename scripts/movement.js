@@ -10,32 +10,6 @@ module.exports = {
   carYposToIsometric
 }
 
-function getPosition (posOne, posTwo) {
-  const direction = getDirection(posOne, posTwo)
-  switch (direction) {
-    case 0:
-      return {
-        xpos: g.arrays.map[posOne].xpos + g.lanePosition,
-        ypos: g.arrays.map[posOne].ypos
-      }
-    case 1:
-      return {
-        xpos: g.arrays.map[posOne].xpos + 1 - g.carLength,
-        ypos: g.arrays.map[posOne].ypos + g.lanePosition
-      }
-    case 2:
-      return {
-        xpos: g.arrays.map[posOne].xpos + 1 - g.lanePosition - g.carWidth,
-        ypos: g.arrays.map[posOne].ypos + 1 - g.carLength
-      }
-    case 3:
-      return {
-        xpos: g.arrays.map[posOne].xpos,
-        ypos: g.arrays.map[posOne].ypos + 1 - g.lanePosition - g.carWidth
-      }
-  }
-}
-
 function getDirection (posOne, posTwo) {
   // 0 up, 1 left, 2 down, 3 right
   if (posOne.xpos > posTwo.xpos) {
@@ -119,9 +93,8 @@ function updateTileQueue (tile) {
 }
 
 function getDistanceToNext (car) {
-  let h = Math.sqrt(Math.pow(carXposToIsometric(car.xpos, car.ypos) - carXposToIsometric(car.xpos2, car.ypos2), 2) + Math.pow(carYposToIsometric(car.xpos, car.ypos) - carYposToIsometric(car.xpos2, car.ypos2), 2))
-  // return ((car.speed || car.acceleration) * g.tileDimension) / (h || 0.001)
-  return ((car.speed || car.acceleration) * g.tileDimension) / (h || 0.001)
+  let h = Math.sqrt(Math.pow(car.xpos - car.xpos2, 2) + Math.pow(car.ypos - car.ypos2, 2))
+  return (car.speed || car.acceleration) / (h || 0.001)
 }
 
 function moveTowardsDestination (car, ratio) {
@@ -132,8 +105,8 @@ function moveTowardsDestination (car, ratio) {
     car.xpos = car.xpos2
     car.ypos = car.ypos2
     let div = document.getElementsByClassName('car' + car.id)[0]
-    div.style.left = (car.xpos - g.carWidth * g.tileDimension / 2) + 'px'
-    div.style.top = (car.ypos - g.carWidth * g.tileDimension / 2) + 'px'
+    div.style.left = carXposToIsometric(car.xpos, car.ypos) + 'px'
+    div.style.top = carYposToIsometric(car.xpos, car.ypos) + 'px'
     return
   }
   car.xpos += (car.xpos2 - car.xpos) * ratio
@@ -169,5 +142,5 @@ function carXposToIsometric (xpos, ypos) {
 }
 
 function carYposToIsometric (xpos, ypos) {
-  return (xpos + ypos + 2) * 33
+  return (xpos + ypos + 2) * 33 - 80
 }

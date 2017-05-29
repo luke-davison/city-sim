@@ -1,6 +1,7 @@
 var g = require('./global.js')
 
 var pathfinding = require('./pathfinding')
+var getCarSprite = require('./carsprite')
 
 module.exports = {
   moveCars,
@@ -30,6 +31,8 @@ function moveCars () {
       moveTowardsDestination(car, distanceToNext)
     }
     if (distanceToNext > 0.7) {
+      let div = document.getElementsByClassName('car' + car.id)[0]
+      div.src = './sprites/vehicles/' + getCarSprite(car, getDirection(car.tiles[0], car.route[0]))
       if (car.route[0].car === -1 || car.route[0].car.id === car.id) {
         whenNextTileIsClear(car)
       } else {
@@ -53,6 +56,8 @@ function moveCars () {
         car.waiting = 0
         car.route[0].queue = car.route[0].queue.filter(x => x.id !== car.id)
         setRoute(car, car.tiles[0].parent, car.tiles[0])
+        let div = document.getElementsByClassName('car' + car.id)[0]
+        div.src = './sprites/vehicles/' + getCarSprite(car, getDirection(car.tiles[0], car.route[0]))
         if (car.route[0].car === -1 || car.route[0].car.id === car.id) {
           whenNextTileIsClear(car)
         } else {
@@ -111,7 +116,8 @@ function moveTowardsDestination (car, ratio) {
     let div = document.getElementsByClassName('car' + car.id)[0]
     div.style.left = carXposToIsometric(car.xpos, car.ypos) + 'px'
     div.style.top = carYposToIsometric(car.xpos, car.ypos) + 'px'
-    div.style.zIndex = Math.floor(car.xpos) * 100 + Math.floor(car.ypos) * 100 + 5
+    div.style.zIndex = (Math.floor(car.xpos + 0.2) + Math.floor(car.ypos + 0.2)) * 100
+
     return
   }
   car.xpos += (car.xpos2 - car.xpos) * ratio
@@ -119,14 +125,11 @@ function moveTowardsDestination (car, ratio) {
   let div = document.getElementsByClassName('car' + car.id)[0]
   div.style.left = carXposToIsometric(car.xpos, car.ypos) + 'px'
   div.style.top = carYposToIsometric(car.xpos, car.ypos) + 'px'
-  div.style.zIndex = Math.floor(car.xpos) * 100 + Math.floor(car.ypos) * 100 + 5
-
-  if (ratio > car.maxSpeed / 0.25) {
-    if (car.tiles[0].parent.type !== 'rd') {
-      div.style.visibility = 'hidden'
-    } else {
-      div.style.visibility = 'visible'
-    }
+  div.style.zIndex = (Math.floor(car.xpos + 0.2) + Math.floor(car.ypos + 0.2)) * 100
+  if ((car.tiles[0].parent.type !== 'rd') || (car.tiles[1] && car.tiles[1].parent.type !== 'rd')) {
+    div.style.visibility = 'hidden'
+  } else {
+    div.style.visibility = 'visible'
   }
 }
 
@@ -138,15 +141,22 @@ function setRoute (car, from, fromTile) {
   car.route = pathfinding.getRoute(from, to, fromTile)
 }
 
-function setRouteHome (car, from, fromTile) {
-  let to = car.home
-  car.route = pathfinding.getRoute(from, to, fromTile)
-}
-
 function getRandomBusiness (home) {
-  let to = g.arrays.wk[Math.floor(Math.random() * g.arrays.wk.length)]
+  const max = g.arrays.wk.length + g.arrays.hm.length
+  let rand = Math.floor(Math.random() * max)
+  let to = {}
+  if (rand > g.arrays.wk.length) {
+    to = g.arrays.hm[rand - g.arrays.wk.length]
+  } else {
+    to = g.arrays.hm[rand]
+  }
   while (to.nearbys.find(x => x.id === home.id) || to.id === home.id) {
-    to = g.arrays.wk[Math.floor(Math.random() * g.arrays.wk.length)]
+    rand = Math.floor(Math.random() * max)
+    if (rand > g.arrays.wk.length) {
+      to = g.arrays.hm[rand - g.arrays.wk.length]
+    } else {
+      to = g.arrays.hm[rand]
+    }
   }
   return to
 }
@@ -156,5 +166,5 @@ function carXposToIsometric (xpos, ypos) {
 }
 
 function carYposToIsometric (xpos, ypos) {
-  return (xpos + ypos) * 33 + 22
+  return (xpos + ypos) * 33 + 18
 }

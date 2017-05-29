@@ -17,9 +17,8 @@ function setupScripts () {
   // builds all the arrays
   getArrays()
   // adds some cars
-  g.arrays.hm.forEach((car, i) => i % 2 === 0 && createCar(car))
+  g.arrays.hm.forEach((car, i) => createCar(car))
 
-  drawExampleCar()
   console.log(g.arrays)
 }
 
@@ -62,10 +61,12 @@ function getArrays () {
 }
 
 function createCar (home) {
-  let car = {speed: 0, moving: true, maxSpeed: 0.08, acceleration: 0.002, waiting: 0}
+  let car = {speed: 0, moving: true, maxSpeed: 0.06, acceleration: 0.0015, waiting: 0}
   car.home = home // g.arrays.hm[Math.floor(Math.random() * g.arrays.hm.length)]
   car.id = g.arrays.cars.length
   car.tiles = []
+  car.color = Math.floor(Math.random() * 12)
+  car.direction = 0
   g.arrays.cars.push(car)
   drawCar(car)
   movement.setRoute(car, car.home, car.home.tiles[0])

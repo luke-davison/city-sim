@@ -16,7 +16,6 @@ function buildMap () {
       }
       let h = 2
       while (data[i * 28 + j][h]) {
-        console.log('hiiii')
         let img = document.createElement('img')
         img.src = './sprites/' + data[i * 28 + j][h]
         img.style.position = 'absolute'
@@ -31,10 +30,9 @@ function buildMap () {
 }
 
 function moveImage (img, xpos, ypos, zpos) {
-  console.log(arguments)
   img.style.left = xToIso(xpos, ypos, img.width, zpos) + 'px'
   img.style.top = yToIso(xpos, ypos, img.height, zpos) + 'px'
-  img.style.zIndex = (ypos + xpos) * 100 - 5
+  img.style.zIndex = (ypos + xpos) * 100
 }
 
 function xToIso (xpos, ypos, imgWidth, zpos) {
@@ -48,16 +46,7 @@ function xToIso (xpos, ypos, imgWidth, zpos) {
 function yToIso (xpos, ypos, imgHeight, zpos) {
   let zoffset = 0
   if (zpos === 2) {
-    console.log('hi')
     zoffset = -72
-  }
-  if (zpos === 1) {
-    console.log('hi2')
-    zoffset = -100
-  }
-  if (zpos === 3) {
-    console.log('hi3')
-    zoffset = -120
   }
   return (xpos + ypos + 4) * 33 - imgHeight + zoffset
 }

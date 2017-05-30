@@ -6,8 +6,12 @@ module.exports = {
 var g = require('./global.js')
 var movement = require('./movement.js')
 
-function getRoute (from, to, fromTile) {
-  let route = searchRoutes(from, [to.id], [[{tile: to}]])
+function getRoute(from, to, fromTile) {
+  let route = searchRoutes(from, [to.id], [
+    [{
+      tile: to
+    }]
+  ])
   let direc = movement.getDirection(route[0], route[1])
 
   let tileRoute = []
@@ -62,14 +66,14 @@ function getRoute (from, to, fromTile) {
   return tileRoute
 }
 
-function getExitTile (from, to, entranceTile) {
+function getExitTile(from, to, entranceTile) {
   let answer = movement.getDirection(from, to)
   if (from.tiles[answer].id !== entranceTile.id) {
     return from.tiles[answer]
   }
 }
 
-function getEntranceTile (from, to) {
+function getEntranceTile(from, to) {
   let answer = movement.getDirection(from, to) - 1
   if (answer < 0) {
     answer += 4
@@ -77,7 +81,7 @@ function getEntranceTile (from, to) {
   return to.tiles[answer]
 }
 
-function getThirdTile (from, current, to) {
+function getThirdTile(from, current, to) {
   const fromDirection = movement.getDirection(from, current)
   const toDirection = movement.getDirection(current, to)
   if (toDirection === fromDirection + 1 || (toDirection === 0 && fromDirection === 3)) {
@@ -85,28 +89,50 @@ function getThirdTile (from, current, to) {
   }
 }
 
-function searchRoutes (finalTile, previousTiles, searchTree) {
-  const step = searchTree.length - 1 // the number of steps away from the start
-  searchTree.push([]) // Adds a new array for the roads the next step array
-  for (let i = 0; i < searchTree[step].length; i++) { // for each road that is the current number of steps away
+function searchRoutes(finalTile, previousTiles, searchTree) {
+  // the number of steps away from the start
+  const step = searchTree.length - 1
+  // Adds a new array for the roads the next step array
+  searchTree.push([])
+  // for each road in the search tree at the step level
+  for (let i = 0; i < searchTree[step].length; i++) {
     let nextTile = searchTree[step][i]
-    if (nextTile.tile.nearbys.find(x => x.id === finalTile.id)) { // if one of these spaces is the end
-      let route = [{tile: finalTile, prevTile: nextTile.tile}] // Creates a new array to store the route from start to finish
-      for (let j = searchTree.length - 1; j > 0; j--) { // for each step already taken
+    if (!endTileFound(nextTile, finalTile)) {
+      // If none of the nearby spaces were the final destination
+      let nearbys = nextTile.tile.nearbys
+      // Filter out all non-roads
+      nearbys = nearbys.filter(x => x.type === 'rd')
+      // Filter out all tiles that have previously been found
+      nearbys = nearbys.filter(x => !previousTiles.includes(x.id))
+      // Add each nearby road to the list of previous tiles
+      nearbys.forEach(road => previousTiles.push(road.id))
+      // Add each road to the search tree at the next step
+      nearbys.forEach(x => {
+        searchTree[step + 1].push({
+          tile: x,
+          prevTile: nextTile.tile
+        })
+      })
+    } else {
+      // If at least one space nearby is the final destination
+      // Create a new array to store the route from start to finish
+      let route = [{
+        tile: finalTile,
+        prevTile: nextTile.tile
+      }]
+      // for each step already taken to find the destination
+      for (let j = searchTree.length - 1; j > 0; j--) {
         const nextTile = searchTree[j - 1].find(x => x.tile.id === route[route.length - 1].prevTile.id) // find the next step..
         route.push(nextTile) // ...and store that in the route
       }
       route = route.map(x => x.tile)
       return route // Returns the full route as an array of ids
-    } else { // If none of the nearby spaces were the final destination
-      let nearbys = nextTile.tile.nearbys.filter(x => {
-        return !previousTiles.includes(x.id) && x.type === 'rd' // filter out all the spaces that are not roads
-      })
-      nearbys.forEach(x => { // for each space not filtered out
-        previousTiles.push(x.id)
-        searchTree[step + 1].push({tile: x, prevTile: nextTile.tile}) // add it to the array for the next step in the tree
-      })
     }
   }
   return searchRoutes(finalTile, previousTiles, searchTree) // rerun the function until the route has been found
+
+  function endTileFound(nextTile, finalTile) {
+    return nextTile.tile.nearbys.find(x => x.id === finalTile.id)
+  }
+
 }

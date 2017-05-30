@@ -9,7 +9,7 @@ function buildMap () {
         let img = document.createElement('img')
         img.src = './sprites/' + data[i * 28 + j][1]
         img.style.position = 'absolute'
-        img.classList.add('id' + i)
+        img.classList.add('id' + (i * 28 + j))
         img.classList.add('tile')
         document.getElementById('main').appendChild(img)
         img.onload = function () { moveImage(img, j, i, 0) }

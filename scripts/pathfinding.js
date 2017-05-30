@@ -1,66 +1,59 @@
 module.exports = {
   getRoute,
-  searchRoutes,
-  getRouteDirections
+  searchRoutes
 }
 
 var g = require('./global.js')
+var movement = require('./movement.js')
 
-function getRoute (from, to, fromTile) {
-  let route = searchRoutes(from, [to.id], [[{branch: to}]])
+function getRoute(from, to, fromTile) {
+  let route = searchRoutes(from, [to.id], [
+    [{
+      tile: to
+    }]
+  ])
+  let direc = movement.getDirection(route[0], route[1])
 
-  let tileRoute = getTileRoute(route, fromTile)
-
-  return tileRoute
-}
-
-function getDirection (posOne, posTwo) {
-  // 0 up, 1 left, 2 down, 3 right
-  if (posOne.xpos > posTwo.xpos) {
-    return 3
-  } else if (posOne.xpos < posTwo.xpos) {
-    return 1
-  } else if (posOne.ypos < posTwo.ypos) {
-    return 2
-  }
-  return 0
-}
-
-function searchRoutes (endBranch, list, tree) {
-  const step = tree.length - 1 // the number of steps away from the start
-  tree.push([]) // Adds a new array for the roads the next step array
-  for (let i = 0; i < tree[step].length; i++) { // for each road that is the current number of steps away
-    let square = tree[step][i]
-    if (square.branch.nearbys.find(x => x.id === endBranch.id)) { // if one of these spaces is the end
-      let route = [{branch: endBranch, prevBranch: square.branch}] // Creates a new array to store the route from start to finish
-      for (let j = tree.length - 1; j > 0; j--) { // for each step already taken
-        const nextBranch = tree[j - 1].find(x => x.branch.id === route[route.length - 1].prevBranch.id) // find the next step..
-        route.push(nextBranch) // ...and store that in the route
+  let tileRoute = []
+  let exitTile = getExitTile(route[0], route[1], fromTile)
+  if (typeof exitTile === 'object') {
+    let tiles = route[0].tiles.map(x => x.place)
+    tiles = tiles.sort((a, b) => {
+      let a1 = a - exitTile.place
+      let b1 = b - exitTile.place
+      if (a1 < 0) {
+        a1 += 4
       }
-      route = route.map(x => x.branch)
-      return route // Returns the full route as an array of ids
-    } else { // If none of the nearby spaces were the final destination
-      let nearbys = square.branch.nearbys.filter(x => {
-        return !list.includes(x.id) && x.type === 'rd' // filter out all the spaces that are not roads
-      })
-      nearbys.forEach(x => { // for each space not filtered out
-        list.push(x.id)
-        tree[step + 1].push({branch: x, prevBranch: square.branch}) // add it to the array for the next step in the tree
-      })
+      if (b1 < 0) {
+        b1 += 4
+      }
+      return a1 - b1
+    })
+    for (let i = 1; i < tiles.length; i++) {
+      if (route[0].tiles.find(x => x.place === tiles[i]).id !== fromTile.id) {
+        tiles.splice(i, 1)
+        i--
+      } else {
+        tiles.splice(i, 1)
+        i = tiles.length
+      }
+    }
+    tiles.push(tiles.shift())
+    for (let i = 0; i < tiles.length; i++) {
+      tileRoute.push(route[0].tiles.find(x => x.place === tiles[i]))
     }
   }
-  return searchRoutes(endBranch, list, tree) // rerun the function until the route has been found
-}
-
-function getTileRoute (route, fromTile) {
-  let tileRoute = [fromTile]
   for (let i = 1; i < route.length - 1; i++) {
-    tileRoute = getEntranceTile(tileRoute, route[i - 1], route[i])
-    let entranceTile = tileRoute[tileRoute.length - 1]
-    tileRoute = getThirdTile(tileRoute, route[i - 1], route[i], route[i + 1])
-    tileRoute = getExitTile(tileRoute, route[i], route[i + 1], entranceTile)
+    let entranceTile = getEntranceTile(route[i - 1], route[i])
+    typeof entranceTile === 'object' && tileRoute.push(entranceTile)
+    let thirdTile = getThirdTile(route[i - 1], route[i], route[i + 1])
+    typeof thirdTile === 'object' && tileRoute.push(thirdTile)
+
+    let exitTile = getExitTile(route[i], route[i + 1], entranceTile)
+    typeof exitTile === 'object' && tileRoute.push(exitTile)
   }
-  tileRoute = getEntranceTile(tileRoute, route[route.length - 2], route[route.length - 1])
+  let entranceTile = getEntranceTile(route[route.length - 2], route[route.length - 1])
+  typeof entranceTile === 'object' && tileRoute.push(entranceTile)
   let j = tileRoute[tileRoute.length - 1].place
   for (let i = 0; i < 3; i++) {
     if (j === 3) {
@@ -73,50 +66,73 @@ function getTileRoute (route, fromTile) {
   return tileRoute
 }
 
-function getExitTile (arr, from, to, entranceTile) {
-  let answer = getDirection(from, to)
+function getExitTile(from, to, entranceTile) {
+  let answer = movement.getDirection(from, to)
   if (from.tiles[answer].id !== entranceTile.id) {
-    arr.push(from.tiles[answer])
+    return from.tiles[answer]
   }
-  return arr
 }
 
-function getEntranceTile (arr, from, to) {
-  let answer = getDirection(from, to) - 1
+function getEntranceTile(from, to) {
+  let answer = movement.getDirection(from, to) - 1
   if (answer < 0) {
     answer += 4
   }
-  arr.push(to.tiles[answer])
-  return arr
+  return to.tiles[answer]
 }
 
-function getThirdTile (arr, from, current, to) {
-  const fromDirection = getDirection(from, current)
-  const toDirection = getDirection(current, to)
+function getThirdTile(from, current, to) {
+  const fromDirection = movement.getDirection(from, current)
+  const toDirection = movement.getDirection(current, to)
   if (toDirection === fromDirection + 1 || (toDirection === 0 && fromDirection === 3)) {
-    arr.push(current.tiles[fromDirection])
+    return current.tiles[fromDirection]
   }
-  return arr
 }
 
-function getRouteDirections (route, fromTile) {
-  let directions = [0]
-  let prevTile = fromTile
-  let prevDirection = 0
-  let newDirection = 0
-  route.forEach((tile, i) => {
-    newDirection = getDirection(prevTile, tile)
-    if (i === 0) {
-      prevDirection = newDirection
+function searchRoutes(finalTile, previousTiles, searchTree) {
+  // the number of steps away from the start
+  const step = searchTree.length - 1
+  // Adds a new array for the roads the next step array
+  searchTree.push([])
+  // for each road in the search tree at the step level
+  for (let i = 0; i < searchTree[step].length; i++) {
+    let nextTile = searchTree[step][i]
+    if (!endTileFound(nextTile, finalTile)) {
+      // If none of the nearby spaces were the final destination
+      let nearbys = nextTile.tile.nearbys
+      // Filter out all non-roads
+      nearbys = nearbys.filter(x => x.type === 'rd')
+      // Filter out all tiles that have previously been found
+      nearbys = nearbys.filter(x => !previousTiles.includes(x.id))
+      // Add each nearby road to the list of previous tiles
+      nearbys.forEach(road => previousTiles.push(road.id))
+      // Add each road to the search tree at the next step
+      nearbys.forEach(x => {
+        searchTree[step + 1].push({
+          tile: x,
+          prevTile: nextTile.tile
+        })
+      })
+    } else {
+      // If at least one space nearby is the final destination
+      // Create a new array to store the route from start to finish
+      let route = [{
+        tile: finalTile,
+        prevTile: nextTile.tile
+      }]
+      // for each step already taken to find the destination
+      for (let j = searchTree.length - 1; j > 0; j--) {
+        const nextTile = searchTree[j - 1].find(x => x.tile.id === route[route.length - 1].prevTile.id) // find the next step..
+        route.push(nextTile) // ...and store that in the route
+      }
+      route = route.map(x => x.tile)
+      return route // Returns the full route as an array of ids
     }
-    let directionChange = newDirection - prevDirection
-    if (directionChange === -3) {
-      directionChange = 1
-    }
-    if (directionChange === 3) {
-      directionChange = -1
-    }
-    directions.push(directionChange)
-  })
-  return directions
+  }
+  return searchRoutes(finalTile, previousTiles, searchTree) // rerun the function until the route has been found
+
+  function endTileFound(nextTile, finalTile) {
+    return nextTile.tile.nearbys.find(x => x.id === finalTile.id)
+  }
+
 }

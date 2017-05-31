@@ -88,7 +88,6 @@ function whenNextTileIsClear (car) {
     }
     updateTileQueue(car.tiles[2])
     car.tiles.pop()
-
   }
 }
 

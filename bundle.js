@@ -160,7 +160,6 @@ function whenNextTileIsClear (car) {
     }
     updateTileQueue(car.tiles[2])
     car.tiles.pop()
-
   }
 }
 
@@ -318,7 +317,7 @@ module.exports = [
   ['rd', 'cityTiles_073.png'],
   ['rd', 'landscapeTiles_031.png'],
   ['rd', 'cityTiles_073.png'],
-  ['rd', 'cityTiles_073.png'],
+  ['rd', 'cityTiles_064.png'],
   ['rd', 'cityTiles_096.png'],
   ['rd', 'cityTiles_126.png'],
   ['hm', 'buildingTiles_085.png', 'buildingTiles_069.png'],
@@ -328,13 +327,13 @@ module.exports = [
   ['rd', 'cityTiles_073.png'],
   ['rd', 'cityTiles_096.png'],
   ['rd', 'cityTiles_073.png'],
-  ['rd', 'cityTiles_073.png'],
+  ['rd', 'cityTiles_006.png'],
   ['rd', 'cityTiles_126.png'],
   ['hm', 'buildingTiles_085.png', 'buildingTiles_069.png'],
   ['pk', 'landscapeTiles_067.png'],
   ['wk', 'buildingTiles_125.png', 'buildingTiles_126.png'],
   ['wk', 'buildingTiles_117.png', 'buildingTiles_127.png'],
-  ['rd', 'cityTiles_081.png'],
+  ['rd', 'cityTiles_056.png'],
   ['wk', 'buildingTiles_101.png', 'buildingTiles_102.png'],
   ['wk', 'buildingTiles_125.png', 'buildingTiles_126.png'],
   ['wk', 'buildingTiles_034.png', 'buildingTiles_128.png'],
@@ -361,11 +360,11 @@ module.exports = [
   ['pk', 'landscapeTiles_067.png'],
   ['hm', 'buildingTiles_036.png', 'buildingTiles_096.png'],
   ['rd', 'cityTiles_122.png'],
-  ['rd', 'cityTiles_073.png'],
+  ['rd', 'cityTiles_071.png'],
   ['rd', 'cityTiles_103.png'],
   ['rd', 'cityTiles_064.png'],
   ['rd', 'cityTiles_096.png'],
-  ['rd', 'cityTiles_073.png'],
+  ['rd', 'cityTiles_071.png'],
   ['rd', 'cityTiles_073.png'],
   ['rd', 'cityTiles_064.png'],
   ['rd', 'cityTiles_006.png'],
@@ -388,7 +387,7 @@ module.exports = [
   ['hm', 'buildingTiles_022.png', 'buildingTiles_074.png'],
   ['hm', 'buildingTiles_022.png', 'buildingTiles_065.png'],
   ['hm', 'buildingTiles_042.png', 'buildingTiles_082.png'],
-  ['rd', 'cityTiles_081.png'],
+  ['rd', 'cityTiles_056.png'],
   ['wk', 'buildingTiles_123.png', 'buildingTiles_128.png'],
   ['wk', 'buildingTiles_123.png', 'buildingTiles_128.png'],
   ['wk', 'buildingTiles_003.png', 'buildingTiles_013.png'],
@@ -415,14 +414,14 @@ module.exports = [
   ['rd', 'cityTiles_096.png'],
   ['rd', 'cityTiles_073.png'],
   ['rd', 'cityTiles_073.png'],
-  ['rd', 'cityTiles_073.png'],
+  ['rd', 'cityTiles_064.png'],
   ['rd', 'cityTiles_088.png'],
   ['wk', 'buildingTiles_003.png', 'buildingTiles_013.png'],
   ['pk', 'cityTiles_067.png'],
   ['wk', 'buildingTiles_116.png', 'buildingTiles_120.png'],
-  ['rd', 'cityTiles_081.png'],
+  ['rd', 'cityTiles_099.png'],
   ['wk', 'buildingTiles_123.png', 'buildingTiles_128.png'],
-  ['pk', 'cityTiles_043.png'],
+  ['pk', 'cityTiles_067.png'],
   ['wk', 'buildingTiles_113.png', 'buildingTiles_118.png'],
   ['wk', 'buildingTiles_116.png', 'buildingTiles_120.png'],
   ['rd', 'cityTiles_095.png'],
@@ -431,7 +430,7 @@ module.exports = [
   ['rd', 'cityTiles_073.png'],
   ['rd', 'cityTiles_073.png'],
   ['rd', 'cityTiles_073.png'],
-  ['rd', 'cityTiles_073.png'],
+  ['rd', 'cityTiles_064.png'],
   ['rd', 'cityTiles_088.png'],
   ['hm', 'buildingTiles_030.png', 'buildingTiles_090.png'],
   ['hm', 'buildingTiles_022.png', 'buildingTiles_076.png'],
@@ -448,11 +447,11 @@ module.exports = [
   ['wk', 'buildingTiles_109.png', 'buildingTiles_102.png'],
   ['wk', 'buildingTiles_115.png', 'buildingTiles_120.png'],
   ['wk', 'buildingTiles_123.png', 'buildingTiles_128.png'],
-  ['rd', 'cityTiles_081.png'],
+  ['rd', 'cityTiles_056.png'],
   ['wk', 'buildingTiles_117.png', 'buildingTiles_127.png'],
   ['wk', 'buildingTiles_009.png', 'buildingTiles_127.png'],
   ['rd', 'cityTiles_122.png'],
-  ['rd', 'cityTiles_073.png'],
+  ['rd', 'cityTiles_006.png'],
   ['rd', 'cityTiles_126.png'],
   ['pk', 'landscapeTiles_071.png'],
   ['pk', 'landscapeTiles_086.png'],
@@ -495,7 +494,7 @@ module.exports = [
   ['hm', 'buildingTiles_021.png', 'buildingTiles_096.png'],
   ['rd', 'cityTiles_122.png'],
   ['rd', 'cityTiles_073.png'],
-  ['rd', 'cityTiles_073.png'],
+  ['rd', 'cityTiles_064.png'],
   ['rd', 'cityTiles_088.png'],
   ['hm', 'buildingTiles_085.png', 'buildingTiles_069.png'],
   ['hm', 'buildingTiles_029.png', 'buildingTiles_098.png'],
@@ -527,13 +526,13 @@ module.exports = [
   ['rd', 'cityTiles_124.png'],
   ['rd', 'cityTiles_125.png'],
   ['hm', 'buildingTiles_036.png', 'buildingTiles_112.png'],
-  ['rd', 'cityTiles_081.png'],
+  ['rd', 'cityTiles_099.png'],
   ['wk', 'buildingTiles_027.png', 'buildingTiles_127.png'],
   ['pk', 'landscapeTiles_067.png'],
   ['wk', 'buildingTiles_124.png', 'buildingTiles_120.png'],
   ['rd', 'cityTiles_112.png'],
   ['wk', 'buildingTiles_010.png', 'buildingTiles_013.png'],
-  ['pk', 'landscapeTiles_067.png'],
+  ['pk', 'cityTiles_043.png'],
   ['wk', 'buildingTiles_009.png', 'buildingTiles_127.png'],
   ['rd', 'cityTiles_112.png'],
   ['wk', 'buildingTiles_040.png', 'buildingTiles_005.png'],
@@ -553,7 +552,7 @@ module.exports = [
   ['hm', 'buildingTiles_022.png', 'buildingTiles_074.png'],
   ['pk', 'landscapeTiles_067.png'],
   ['hm', 'buildingTiles_021.png', 'buildingTiles_070.png'],
-  ['rd', 'cityTiles_081.png'],
+  ['rd', 'cityTiles_078.png'],
   ['hm', 'buildingTiles_036.png', 'buildingTiles_084.png'],
   ['rd', 'cityTiles_081.png'],
   ['wk', 'buildingTiles_040.png', 'buildingTiles_005.png'],
@@ -582,7 +581,7 @@ module.exports = [
   ['hm', 'buildingTiles_085.png', 'buildingTiles_069.png'],
   ['hm', 'buildingTiles_036.png', 'buildingTiles_082.png'],
   ['rd', 'cityTiles_124.png'],
-  ['rd', 'cityTiles_073.png'],
+  ['rd', 'cityTiles_006.png'],
   ['rd', 'cityTiles_126.png'],
   ['pk', 'landscapeTiles_071.png'],
   ['pk', 'landscapeTiles_072.png'],
@@ -591,12 +590,12 @@ module.exports = [
   ['wk', 'buildingTiles_123.png', 'buildingTiles_128.png'],
   ['pk', 'landscapeTiles_067.png'],
   ['wk', 'buildingTiles_107.png', 'buildingTiles_118.png'],
-  ['rd', 'cityTiles_081.png'],
+  ['rd', 'cityTiles_056.png'],
   ['wk', 'buildingTiles_108.png', 'buildingTiles_102.png'],
   ['wk', 'buildingTiles_113.png', 'buildingTiles_118.png'],
   ['hm', 'buildingTiles_014.png', 'buildingTiles_074.png'],
   ['hm', 'buildingTiles_014.png', 'buildingTiles_104.png'],
-  ['rd', 'cityTiles_081.png'],
+  ['rd', 'cityTiles_056.png'],
   ['hm', 'buildingTiles_022.png', 'buildingTiles_090.png'],
   ['hm', 'buildingTiles_022.png', 'buildingTiles_076.png'],
   ['hm', 'buildingTiles_030.png', 'buildingTiles_088.png'],
@@ -620,7 +619,7 @@ module.exports = [
   ['pk', 'landscapeTiles_067.png'],
   ['wk', 'buildingTiles_009.png', 'buildingTiles_127.png'],
   ['rd', 'cityTiles_124.png'],
-  ['rd', 'cityTiles_073.png'],
+  ['rd', 'cityTiles_091.png'],
   ['rd', 'cityTiles_064.png'],
   ['rd', 'cityTiles_096.png'],
   ['rd', 'cityTiles_073.png'],
@@ -632,7 +631,7 @@ module.exports = [
   ['rd', 'cityTiles_073.png'],
   ['rd', 'cityTiles_073.png'],
   ['rd', 'cityTiles_103.png'],
-  ['rd', 'cityTiles_081.png'],
+  ['rd', 'cityTiles_000.png'],
   ['hm', 'buildingTiles_085.png', 'buildingTiles_069.png'],
   ['hm', 'buildingTiles_022.png', 'buildingTiles_065.png'],
   ['hm', 'buildingTiles_030.png', 'buildingTiles_104.png'],
@@ -664,7 +663,7 @@ module.exports = [
   ['hm', 'buildingTiles_021.png', 'buildingTiles_112.png'],
   ['rd', 'cityTiles_122.png'],
   ['rd', 'cityTiles_073.png'],
-  ['rd', 'cityTiles_073.png'],
+  ['rd', 'cityTiles_106.png'],
   ['rd', 'cityTiles_125.png'],
   ['hm', 'buildingTiles_085.png', 'buildingTiles_069.png'],
   ['pk', 'landscapeTiles_067.png'],
@@ -717,7 +716,7 @@ module.exports = [
   ['rd', 'cityTiles_073.png'],
   ['rd', 'cityTiles_125.png'],
   ['rd', 'cityTiles_103.png'],
-  ['rd', 'cityTiles_073.png'],
+  ['rd', 'cityTiles_006.png'],
   ['rd', 'cityTiles_126.png'],
   ['hm', 'buildingTiles_085.png', 'buildingTiles_069.png'],
   ['hm', 'buildingTiles_029.png', 'buildingTiles_070.png'],
@@ -764,14 +763,14 @@ module.exports = [
   ['rd', 'cityTiles_071.png'],
   ['rd', 'cityTiles_073.png'],
   ['rd', 'cityTiles_073.png'],
-  ['rd', 'cityTiles_073.png'],
+  ['rd', 'cityTiles_006.png'],
   ['rd', 'cityTiles_126.png'],
   ['hm', 'buildingTiles_085.png', 'buildingTiles_089.png'],
   ['hm', 'buildingTiles_085.png', 'buildingTiles_089.png'],
   ['pk', 'landscapeTiles_067.png'],
   ['pk', 'landscapeTiles_067.png'],
   ['hm', 'buildingTiles_021.png', 'buildingTiles_098.png'],
-  ['rd', 'cityTiles_081.png'],
+  ['rd', 'cityTiles_081.png']
 ]
 
 
@@ -784,16 +783,11 @@ module.exports = {
   searchRoutes
 }
 
-var g = __webpack_require__(1)
 var movement = __webpack_require__(0)
 
-function getRoute(from, to, fromTile) {
-  let route = searchRoutes(from, [to.id], [
-    [{
-      tile: to
-    }]
-  ])
-  let direc = movement.getDirection(route[0], route[1])
+function getRoute (from, to, fromTile) {
+  let route = searchRoutes(from, [to.id], [[{tile: to}]])
+  route.pop()
 
   let tileRoute = []
   let exitTile = getExitTile(route[0], route[1], fromTile)
@@ -835,19 +829,10 @@ function getRoute(from, to, fromTile) {
   }
   let entranceTile = getEntranceTile(route[route.length - 2], route[route.length - 1])
   typeof entranceTile === 'object' && tileRoute.push(entranceTile)
-  let j = tileRoute[tileRoute.length - 1].place
-  for (let i = 0; i < 3; i++) {
-    if (j === 3) {
-      j = 0
-    } else {
-      j++
-    }
-    tileRoute.push(tileRoute[tileRoute.length - 1].parent.tiles[j])
-  }
   return tileRoute
 }
 
-function getExitTile(from, to, entranceTile) {
+function getExitTile (from, to, entranceTile) {
   let answer = movement.getDirection(from, to)
   if (from.tiles[answer].id !== entranceTile.id) {
     return from.tiles[answer]
@@ -942,7 +927,11 @@ function setupScripts () {
   // builds all the arrays
   getArrays()
   // adds some cars
-  g.arrays.hm.forEach((car, i) => i % 2 === 0 && setTimeout(() => createCar(car), Math.random() * 50000))
+
+  for (let i = 0; i < 100; i++) {
+    setTimeout(() => createCar(g.arrays.hm[g.arrays.hm.length - 1]), i * 500)
+  }
+  // g.arrays.hm.forEach((car, i) => i % 1 === 0 && setTimeout(() => createCar(car), Math.random() * 20))
 
   console.log(g.arrays)
 }

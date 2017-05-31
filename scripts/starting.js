@@ -17,7 +17,11 @@ function setupScripts () {
   // builds all the arrays
   getArrays()
   // adds some cars
-  g.arrays.hm.forEach((car, i) => i % 2 === 0 && setTimeout(() => createCar(car), Math.random() * 50000))
+
+  for (let i = 0; i < 100; i++) {
+    setTimeout(() => createCar(g.arrays.hm[g.arrays.hm.length - 1]), i * 500)
+  }
+  // g.arrays.hm.forEach((car, i) => i % 1 === 0 && setTimeout(() => createCar(car), Math.random() * 20))
 
   console.log(g.arrays)
 }

@@ -3,16 +3,11 @@ module.exports = {
   searchRoutes
 }
 
-var g = require('./global.js')
 var movement = require('./movement.js')
 
-function getRoute(from, to, fromTile) {
-  let route = searchRoutes(from, [to.id], [
-    [{
-      tile: to
-    }]
-  ])
-  let direc = movement.getDirection(route[0], route[1])
+function getRoute (from, to, fromTile) {
+  let route = searchRoutes(from, [to.id], [[{tile: to}]])
+  route.pop()
 
   let tileRoute = []
   let exitTile = getExitTile(route[0], route[1], fromTile)
@@ -54,19 +49,10 @@ function getRoute(from, to, fromTile) {
   }
   let entranceTile = getEntranceTile(route[route.length - 2], route[route.length - 1])
   typeof entranceTile === 'object' && tileRoute.push(entranceTile)
-  let j = tileRoute[tileRoute.length - 1].place
-  for (let i = 0; i < 3; i++) {
-    if (j === 3) {
-      j = 0
-    } else {
-      j++
-    }
-    tileRoute.push(tileRoute[tileRoute.length - 1].parent.tiles[j])
-  }
   return tileRoute
 }
 
-function getExitTile(from, to, entranceTile) {
+function getExitTile (from, to, entranceTile) {
   let answer = movement.getDirection(from, to)
   if (from.tiles[answer].id !== entranceTile.id) {
     return from.tiles[answer]

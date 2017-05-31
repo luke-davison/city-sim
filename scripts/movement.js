@@ -55,13 +55,18 @@ function moveCars () {
       if (car.waiting === 150) {
         car.waiting = 0
         car.route[0].queue = car.route[0].queue.filter(x => x.id !== car.id)
+        let oldRoute = car.route
         setRoute(car, car.tiles[0].parent, car.tiles[0])
-        let div = document.getElementsByClassName('car' + car.id)[0]
-        div.src = './sprites/vehicles/' + getCarSprite(car, getDirection(car.tiles[0], car.route[0]))
         if (car.route[0].car === -1 || car.route[0].car.id === car.id) {
-          whenNextTileIsClear(car)
+          let div = document.getElementsByClassName('car' + car.id)[0]
+          div.src = './sprites/vehicles/' + getCarSprite(car, getDirection(car.tiles[0], car.route[0]))
+          if (car.route[0].car === -1 || car.route[0].car.id === car.id) {
+            whenNextTileIsClear(car)
+          } else {
+            car.route[0].queue.push(car)
+          }
         } else {
-          car.route[0].queue.push(car)
+          car.route = oldRoute
         }
       }
     }

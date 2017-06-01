@@ -1,31 +1,47 @@
 module.exports = buildMap
 
+const g = require('./global.js')
 const data = require('./map.js')
 
 function buildMap () {
+  let arr = []
   for (let i = 0; i < 18; i++) {
     for (let j = 0; j < 28; j++) {
-      if (data[i * 28 + j][1]) {
+      arr.push({xpos: j, ypos: i})
+    }
+  }
+  let arr2 = []
+  while (arr.length > 0) {
+    arr2.push(arr.splice(Math.floor(Math.random() * arr.length), 1)[0])
+  }
+  for (let i = 0; i < arr2.length; i++) {
+    setTimeout(() => {
+      const xpos = arr2[i].xpos
+      const ypos = arr2[i].ypos
+      let num = ypos * 28 + xpos
+      if (data[num][1]) {
         let img = document.createElement('img')
-        img.src = './sprites/' + data[i * 28 + j][1]
+        img.src = './sprites/' + data[num][1]
         img.style.position = 'absolute'
-        img.classList.add('id' + (i * 28 + j))
+        img.style.visibility = 'hidden'
+        img.classList.add('id' + num)
         img.classList.add('tile')
         document.getElementById('main').appendChild(img)
-        img.onload = function () { moveImage(img, j, i, 0) }
+        img.onload = function () { moveImage(img, xpos, ypos, 0) }
       }
       let h = 2
-      while (data[i * 28 + j][h]) {
+      while (data[num][h]) {
         let img = document.createElement('img')
-        img.src = './sprites/' + data[i * 28 + j][h]
+        img.src = './sprites/' + data[num][h]
         img.style.position = 'absolute'
-        img.classList.add('id' + i)
+        img.style.visibility = 'hidden'
+        img.classList.add('id' + ypos)
         img.classList.add('tile')
         document.getElementById('main').appendChild(img)
-        img.onload = () => { moveImage(img, j, i, h - 1) }
+        img.onload = () => { moveImage(img, xpos, ypos, h - 1) }
         h++
       }
-    }
+    }, i * 10)
   }
 }
 
@@ -33,6 +49,7 @@ function moveImage (img, xpos, ypos, zpos) {
   img.style.left = xToIso(xpos, ypos, img.width, zpos) + 'px'
   img.style.top = yToIso(xpos, ypos, img.height, zpos) + 'px'
   img.style.zIndex = (ypos + xpos) * 100
+  img.style.visibility = 'visible'
 }
 
 function xToIso (xpos, ypos, imgWidth, zpos) {

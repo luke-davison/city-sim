@@ -920,8 +920,6 @@ const streetArray = __webpack_require__(2)
 function setupScripts () {
   // sets the frame rate - which also controls how fast everything travels
   window.frameRate(30)
-  // determines how big the tiles can be for everything to fit on the screen
-  g.tileDimension = setTileDimension()
   // adds all the map divs to the page
   buildMap()
   // builds all the arrays
@@ -929,19 +927,11 @@ function setupScripts () {
   // adds some cars
 
   for (let i = 0; i < 100; i++) {
-    setTimeout(() => createCar(g.arrays.hm[g.arrays.hm.length - 1]), i * 500)
+    setTimeout(() => createCar(g.arrays.hm[g.arrays.hm.length - 1]), i * 500 + 10 * g.mapWidth * g.mapHeight)
   }
   // g.arrays.hm.forEach((car, i) => i % 1 === 0 && setTimeout(() => createCar(car), Math.random() * 20))
 
   console.log(g.arrays)
-}
-
-function setTileDimension () {
-  // const maxTileHeight = Math.floor((window.innerHeight - 2 * g.border) / g.mapHeight)
-  // const maxTileWidth = Math.floor((window.innerWidth - 2 * g.border) / g.mapWidth)
-  // return Math.min(maxTileHeight, maxTileWidth)
-  return 20
-  // return Math.floor(Math.sqrt(33 * 33 + 66 * 66))
 }
 
 function forEachInStreetArray (func) {
@@ -1007,17 +997,6 @@ function drawCar (car) {
   }
 }
 
-function drawExampleCar () {
-  let img = document.createElement('img')
-  img.src = './sprites/vehicles/carBlue3_010.png'
-  img.style.position = 'absolute'
-  document.getElementById('main').appendChild(img)
-  img.onload = function () {
-    img.style.left = movement.carXposToIsometric(0, 0) + 'px'
-    img.style.top = movement.carYposToIsometric(0, 0) + 'px'
-  }
-}
-
 
 /***/ }),
 /* 5 */
@@ -1025,32 +1004,48 @@ function drawExampleCar () {
 
 module.exports = buildMap
 
+const g = __webpack_require__(1)
 const data = __webpack_require__(2)
 
 function buildMap () {
+  let arr = []
   for (let i = 0; i < 18; i++) {
     for (let j = 0; j < 28; j++) {
-      if (data[i * 28 + j][1]) {
+      arr.push({xpos: j, ypos: i})
+    }
+  }
+  let arr2 = []
+  while (arr.length > 0) {
+    arr2.push(arr.splice(Math.floor(Math.random() * arr.length), 1)[0])
+  }
+  for (let i = 0; i < arr2.length; i++) {
+    setTimeout(() => {
+      const xpos = arr2[i].xpos
+      const ypos = arr2[i].ypos
+      let num = ypos * 28 + xpos
+      if (data[num][1]) {
         let img = document.createElement('img')
-        img.src = './sprites/' + data[i * 28 + j][1]
+        img.src = './sprites/' + data[num][1]
         img.style.position = 'absolute'
-        img.classList.add('id' + (i * 28 + j))
+        img.style.visibility = 'hidden'
+        img.classList.add('id' + num)
         img.classList.add('tile')
         document.getElementById('main').appendChild(img)
-        img.onload = function () { moveImage(img, j, i, 0) }
+        img.onload = function () { moveImage(img, xpos, ypos, 0) }
       }
       let h = 2
-      while (data[i * 28 + j][h]) {
+      while (data[num][h]) {
         let img = document.createElement('img')
-        img.src = './sprites/' + data[i * 28 + j][h]
+        img.src = './sprites/' + data[num][h]
         img.style.position = 'absolute'
-        img.classList.add('id' + i)
+        img.style.visibility = 'hidden'
+        img.classList.add('id' + ypos)
         img.classList.add('tile')
         document.getElementById('main').appendChild(img)
-        img.onload = () => { moveImage(img, j, i, h - 1) }
+        img.onload = () => { moveImage(img, xpos, ypos, h - 1) }
         h++
       }
-    }
+    }, i * 10)
   }
 }
 
@@ -1058,6 +1053,7 @@ function moveImage (img, xpos, ypos, zpos) {
   img.style.left = xToIso(xpos, ypos, img.width, zpos) + 'px'
   img.style.top = yToIso(xpos, ypos, img.height, zpos) + 'px'
   img.style.zIndex = (ypos + xpos) * 100
+  img.style.visibility = 'visible'
 }
 
 function xToIso (xpos, ypos, imgWidth, zpos) {

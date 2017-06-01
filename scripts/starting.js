@@ -10,8 +10,6 @@ const streetArray = require('./map.js')
 function setupScripts () {
   // sets the frame rate - which also controls how fast everything travels
   window.frameRate(30)
-  // determines how big the tiles can be for everything to fit on the screen
-  g.tileDimension = setTileDimension()
   // adds all the map divs to the page
   buildMap()
   // builds all the arrays
@@ -19,19 +17,11 @@ function setupScripts () {
   // adds some cars
 
   for (let i = 0; i < 100; i++) {
-    setTimeout(() => createCar(g.arrays.hm[g.arrays.hm.length - 1]), i * 500)
+    setTimeout(() => createCar(g.arrays.hm[g.arrays.hm.length - 1]), i * 500 + 10 * g.mapWidth * g.mapHeight)
   }
   // g.arrays.hm.forEach((car, i) => i % 1 === 0 && setTimeout(() => createCar(car), Math.random() * 20))
 
   console.log(g.arrays)
-}
-
-function setTileDimension () {
-  // const maxTileHeight = Math.floor((window.innerHeight - 2 * g.border) / g.mapHeight)
-  // const maxTileWidth = Math.floor((window.innerWidth - 2 * g.border) / g.mapWidth)
-  // return Math.min(maxTileHeight, maxTileWidth)
-  return 20
-  // return Math.floor(Math.sqrt(33 * 33 + 66 * 66))
 }
 
 function forEachInStreetArray (func) {
@@ -94,16 +84,5 @@ function drawCar (car) {
     img.style.left = movement.carXposToIsometric(car.xpos, car.ypos) + 'px'
     img.style.top = movement.carYposToIsometric(car.xpos, car.ypos) + 'px'
     img.style.zIndex = car.ypos + car.ypos + 5
-  }
-}
-
-function drawExampleCar () {
-  let img = document.createElement('img')
-  img.src = './sprites/vehicles/carBlue3_010.png'
-  img.style.position = 'absolute'
-  document.getElementById('main').appendChild(img)
-  img.onload = function () {
-    img.style.left = movement.carXposToIsometric(0, 0) + 'px'
-    img.style.top = movement.carYposToIsometric(0, 0) + 'px'
   }
 }
